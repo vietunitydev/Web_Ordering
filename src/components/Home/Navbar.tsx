@@ -1,8 +1,8 @@
 import cart_icon from '../../assets/cart_icon.svg'
 import grass_icon from '../../assets/grass_icon.png'
-import "./Header.css";
+import "./Navbar.css";
 
-const Header = () => {
+const Navbar = () => {
     return (
         <nav className="navbar">
             <div className="logo">EATNOW.</div>
@@ -30,4 +30,4 @@ const Header = () => {
     );
 };
 
-export default Header;
+export default Navbar;

@@ -1,10 +1,12 @@
-import Header from "./components/Header/Header.tsx";
-
+import Home from "./pages/home/Home.tsx";
+import Navbar from "./components/Home/Navbar.tsx";
+import "./App.css"
 function App() {
   return (
-    <>
-      <Header/>
-    </>
+    <div className="App">
+        <Navbar/>
+        <Home/>
+    </div>
   )
 }
 
