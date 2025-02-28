@@ -1,0 +1,91 @@
+.hero {
+    display: flex;
+    justify-content: center;
+    align-content: start;
+    background-color: #fff;
+    padding: 0 5rem;
+}
+
+.hero-child {
+    flex: 1;
+}
+
+.hero-content h1 {
+    font-size: 5rem;
+    color: #ff7f00;
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    margin-right: 2rem;
+}
+
+.hero-button {
+    background-color: #ff7f00;
+    color: white;
+    margin-top: 5rem;
+    padding: 1.5rem 3.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.hero-button:hover {
+    background-color: #e66e00;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    padding: 2rem 5rem;
+    /*background-color: #f5f5f5;*/
+    /*border-radius: 10px;*/
+    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
+}
+
+.menu-item {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
+
+.menu-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px 10px 0 0;
+    object-fit: cover;
+}
+
+.menu-item-content {
+    text-align: center;
+    /*padding: 1rem;*/
+}
+
+.menu-item-content h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0.5rem 0;
+}
+
+.menu-item-content p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.2rem 0;
+}
+
+.menu-item-content .price {
+    color: #ff3b30; /* Màu đỏ cho giá tiền */
+    font-weight: bold;
+    font-size: 1rem;
+}

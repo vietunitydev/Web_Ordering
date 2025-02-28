@@ -1,10 +1,7 @@
 .home {
-    width: 100%;
-    display: flex;
-    margin-top: 80px;
-    background: #f9f9f9;
-}
-
-.home p {
-    width: 100%;
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
+    /*height: 100vh;*/
+    /*text-align: center;*/
 }
