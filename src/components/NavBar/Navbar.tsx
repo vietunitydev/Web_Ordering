@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import cart_icon from '../../assets/cart_icon.svg';
 import grass_icon from '../../assets/grass_icon.png';
+import avatar_icon from '../../assets/avatar_icon.png';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
@@ -42,7 +43,7 @@ const Navbar: React.FC = () => {
     return (
         <nav className="navbar">
             <div className="logo">
-                <Link to="/home">EATNOW.</Link>
+                <Link to="/home"><p>EATNOW.</p></Link>
             </div>
             <ul className="nav-links">
                 <li>
@@ -63,7 +64,7 @@ const Navbar: React.FC = () => {
             </ul>
             <div className="nav-actions">
                 <div className="nav-actions-input-cart">
-                    <img src={grass_icon} alt="grass_icon" />
+                    <img className="grass_icon" src={grass_icon} alt="grass_icon" />
                     <div className="search-box">
                         <form onSubmit={handleSearch}>
                             <input
@@ -71,12 +72,14 @@ const Navbar: React.FC = () => {
                                 placeholder="Tìm kiếm"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
+                                className="search-input"
                             />
                         </form>
                     </div>
+                    <span className="separator">|</span> {/* Dấu gạch thẳng */}
                     <div className="cart-icon">
                         <Link to="/cart">
-                            <img src={cart_icon} alt="cart_icon" width={30} />
+                            <img src={cart_icon} alt="cart_icon" />
                             <span className="cart-badge">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
                         </Link>
                     </div>
@@ -84,7 +87,7 @@ const Navbar: React.FC = () => {
                 {isLoggedIn ? (
                     <div className="avatar-container">
                         <img
-                            src="https://via.placeholder.com/40"
+                            src={avatar_icon}
                             alt="Avatar"
                             className="avatar"
                             onClick={() => setShowDropdown(!showDropdown)}

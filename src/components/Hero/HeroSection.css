@@ -1,52 +1,67 @@
 .hero {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    align-content: start;
+    align-items: start;
     background-color: #fff;
-    padding: 0 5rem;
+    padding: 2rem 5rem;
+    gap: 2rem;
 }
 
 .hero-child {
     flex: 1;
+    min-width: 300px;
+}
+
+/* Căn lề trái cho text và nút */
+.hero-content {
+    text-align: left;
 }
 
 .hero-content h1 {
-    font-size: 5rem;
-    color: #ff7f00;
+    font-size: 4rem;
     margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.hero-content h1 span.orange {
+    color: #ff7f00;
+}
+
+.hero-content h1 span.black {
+    color: #000;
 }
 
 .hero-content p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: #666;
     margin-bottom: 1.5rem;
-    margin-right: 2rem;
+    max-width: 500px;
 }
 
 .hero-button {
     background-color: #ff7f00;
     color: white;
-    margin-top: 5rem;
-    padding: 1.5rem 3.5rem;
+    padding: 1rem 2rem;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
+    text-align: left;
+    display: inline-block;
 }
 
 .hero-button:hover {
     background-color: #e66e00;
 }
 
+/* Đảm bảo luôn có 2 item mỗi hàng */
 .menu-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
+    gap: 1rem;
     padding: 2rem 5rem;
-    /*background-color: #f5f5f5;*/
-    /*border-radius: 10px;*/
-    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
 }
 
 .menu-item {
@@ -69,7 +84,6 @@
 
 .menu-item-content {
     text-align: center;
-    /*padding: 1rem;*/
 }
 
 .menu-item-content h3 {
@@ -85,7 +99,52 @@
 }
 
 .menu-item-content .price {
-    color: #ff3b30; /* Màu đỏ cho giá tiền */
+    color: #ff3b30;
     font-weight: bold;
     font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-button {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+    }
+
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr); /* Giữ nguyên 2 cột */
+        gap: 0.8rem;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-content p {
+        font-size: 0.8rem;
+    }
+
+    .hero-button {
+        font-size: 0.9rem;
+        padding: 0.7rem 1.2rem;
+    }
+
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr); /* Giữ nguyên 2 cột */
+        gap: 0.5rem;
+        padding: 1rem;
+    }
 }

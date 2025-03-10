@@ -4,17 +4,18 @@
     justify-content: space-between;
     align-items: center;
     background-color: #ffffff;
-    padding: 10px 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 60px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
-.logo {
-    font-size: 24px;
+.logo a{
+    font-size: 28px;
     font-weight: bold;
     color: #f39c12;
+    text-decoration: none;
 }
 
 .nav-links {
@@ -27,6 +28,7 @@
 
 .nav-links li a {
     font-size: 16px;
+    font-weight: bold;
     color: #333;
     text-decoration: none;
 }
@@ -38,56 +40,80 @@
 .nav-actions {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .nav-actions-input-cart {
     display: flex;
     align-items: center;
-    gap: 10px;
+    background-color: #fff;
+    /*border: 1px solid #ccc;*/
+    border-radius: 10px;
+    padding: 10px 10px;
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.1);
 }
 
-.search-box input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.grass_icon {
+    width: 20px;
+    margin: 8px 20px 8px 10px;
+    color: #999;
+}
+
+.search-input {
+    border: none; /* Loại bỏ viền input */
+    outline: none; /* Loại bỏ viền khi focus */
     font-size: 14px;
-    width: 200px;
+    width: 200px; /* Điều chỉnh kích thước */
+    background-color: transparent; /* Nền trong suốt */
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.separator {
+    margin: 0 10px; /* Khoảng cách giữa input và cart icon */
+    color: #ccc; /* Màu xám nhạt */
+    font-weight: bold;
 }
 
 .cart-icon {
+    width: 20px;
     position: relative;
+    margin: 0 10px;
 }
 
-.cart-icon img {
-    cursor: pointer;
+.cart-icon a {
+    text-decoration: none;
 }
 
 .cart-badge {
     position: absolute;
     top: -5px;
-    right: -10px;
-    background-color: #e74c3c;
+    right: -5px;
+    background-color: #ff6200;
     color: white;
     border-radius: 50%;
     padding: 2px 6px;
     font-size: 12px;
 }
 
+/* Định dạng nút Đăng nhập */
 .login-btn {
-    padding: 8px 12px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
     text-decoration: none;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid #fff;
+    background-color: #fff;
+    transition: background-color 0.2s;
 }
 
 .login-btn:hover {
-    background-color: #2980b9;
+    background-color: #f0f0f0;
 }
-
 .avatar-container {
     position: relative;
 }
@@ -96,6 +122,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    border: 1px solid #000000;
     cursor: pointer;
 }
 
@@ -115,6 +142,7 @@
 .dropdown button {
     padding: 10px;
     text-align: left;
+    font-size: 14px;
     color: #333;
     text-decoration: none;
     border: none;
