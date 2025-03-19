@@ -1,6 +1,6 @@
 .product-grid {
-    margin: 3rem 0;
-    padding: 5rem;
+    margin-top: 3rem;
+    padding: 0 5rem;
     text-align: center;
     background-color: #fff;
 }
@@ -42,22 +42,37 @@
 }
 
 .product-content {
+    display: flex;
     padding: 1rem;
     text-align: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
 .product-content h3 {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     color: #333;
-    margin: 0.5rem 0;
+    margin: 0 0 0.5rem 0 ;
 }
 
 .rating {
-    font-size: 0.9rem;
-    color: #ff7f00; /* Màu cam cho sao */
+    display: flex;
+    height: 2rem;
+    align-items: center;
 }
 
-.price {
+.rating img{
+    width: 0.7rem;
+    height: 0.7rem;
+}
+
+.rating p{
+    font-size: 0.9rem;
+    color: #333;
+    margin-left: 5px;
+}
+
+.product-content .price {
     font-size: 1rem;
     color: #333;
     margin: 0.5rem 0;
@@ -67,11 +82,11 @@
 .add-to-cart {
     background-color: #ff7f00;
     color: white;
-    padding: 0.5rem 1rem;
+    padding: 1rem 2rem;
     border: none;
-    border-radius: 5px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     transition: background-color 0.2s;
 }
 
@@ -79,23 +94,34 @@
     background-color: #e66e00;
 }
 
-.see-more {
-    background-color: #ff7f00;
-    color: white;
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: 20px; /* Nút tròn hơn */
-    cursor: pointer;
-    font-size: 1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+.left-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.see-more::after {
-    content: '○'; /* Hiệu ứng tròn nhỏ */
-    font-size: 1.2rem;
+.see-more {
+    display: inline-flex;
+    align-items: center;
+    background-color: #ff7f00;
+    padding: 0.5rem 0.5rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    gap: 0.5rem;
 }
+.see-more p{
+    font-size: 0.8rem;
+    color: white;
+    padding-right: 1.5rem;
+}
+.see-more div{
+    background-color: #f9f9f9;
+    border-radius: 20px;
+    width:2.5rem;
+    height: 2.5rem;
+}
+
 
 .see-more:hover {
     background-color: #e66e00;

@@ -8,6 +8,7 @@ import LoginForm from "./pages/login/LoginForm.tsx";
 import RegisterForm from "./pages/login/RegisterForm.tsx";
 import Home from "./pages/home/Home.tsx";
 import ProfilePage from "./pages/profile/ProfilePage.tsx";
+import Footer from "./components/Footer/Footer.tsx";
 
 
 const App: React.FC = () => {
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterForm />} />
             </Routes>
+            <Footer />
         </Router>
     );
 };
