@@ -1,18 +1,19 @@
-/* ProfilePage.css */
 .profile-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-color: #f5f5f5;
-    padding: 20px;
+    min-height: 500px;
+    /*background-color: #f5f5f5;*/
+    padding: 40px 20px;
+    max-width: 1300px;
+    margin: 0 auto;
 }
 
 .profile-container {
     background-color: white;
     padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 500px;
 }
@@ -21,36 +22,40 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    /*margin-bottom: 25px;*/
 }
 
 .profile-header h2 {
     font-size: 24px;
+    font-weight: bold;
     color: #333;
 }
 
 .delete-account-btn {
     background: none;
     border: none;
-    color: #3498db;
+    color: #e74c3c;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    transition: color 0.3s ease;
 }
 
 .delete-account-btn:hover {
-    text-decoration: underline;
+    color: #c0392b;
 }
 
 .profile-container h3 {
     font-size: 18px;
+    font-weight: 500;
     color: #333;
-    margin-bottom: 20px;
 }
 
 .error-message {
-    color: red;
+    color: #e74c3c;
     font-size: 14px;
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .form-group {
@@ -60,46 +65,63 @@
 .form-group label {
     display: block;
     font-size: 14px;
+    font-weight: 500;
     color: #333;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
+    background-color: #f9f9f9;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #3498db; /* Viền xanh khi focus */
 }
 
 .form-group input:disabled {
-    background-color: #f0f0f0;
+    background-color: #eceff1;
+    color: #b2bec3;
+}
+
+.change-password-wrapper {
+    margin-top: 10px; /* Khoảng cách giữa input và nút "Đổi mật khẩu" */
 }
 
 .change-password-link {
     background: none;
     border: none;
-    color: #3498db;
+    color: #3498db; /* Màu xanh giống trong hình */
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    margin-left: 10px;
+    transition: color 0.3s ease;
 }
 
 .change-password-link:hover {
-    text-decoration: underline;
+    color: #2980b9;
 }
 
 .save-btn {
     width: 100%;
-    padding: 12px;
-    background-color: #3498db;
+    padding: 14px; /* Tăng padding để nút cao hơn */
+    background-color: #3498db; /* Màu xanh giống trong hình */
     color: white;
     border: none;
     border-radius: 5px;
     font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase; /* Chuyển chữ thành in hoa */
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
 }
 
 .save-btn:hover {
@@ -116,6 +138,10 @@
         font-size: 20px;
     }
 
+    .delete-account-btn {
+        font-size: 12px;
+    }
+
     .profile-container h3 {
         font-size: 16px;
     }
@@ -127,7 +153,7 @@
     .form-group input,
     .form-group select {
         font-size: 12px;
-        padding: 8px;
+        padding: 10px;
     }
 
     .change-password-link {
@@ -136,6 +162,10 @@
 
     .save-btn {
         font-size: 14px;
-        padding: 10px;
+        padding: 12px;
+    }
+
+    .error-message {
+        font-size: 12px;
     }
 }

@@ -1,8 +1,8 @@
-/* CartPage.css */
 .cart-page {
     padding: 20px;
-    background-color: #f5f5f5;
-    min-height: 100vh;
+    /*background-color: #f5f5f5;*/
+    max-width: 1300px;
+    margin: 0 auto;
 }
 
 .cart-title {
@@ -38,6 +38,14 @@
     border-radius: 5px;
 }
 
+.quantity-input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
 .remove-button {
     background: none;
     border: none;
@@ -47,11 +55,26 @@
 }
 
 .cart-summary {
-    background-color: white;
+    /*background-color: white;*/
     padding: 20px;
     border-radius: 10px;
-    max-width: 400px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    /*max-width: 800px;*/
     margin: 0 auto;
+}
+
+.summary-left {
+    flex: 1;
+    max-width: 300px;
+}
+
+.summary-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
 }
 
 .summary-row {
@@ -59,28 +82,37 @@
     justify-content: space-between;
     margin-bottom: 10px;
     font-size: 16px;
+    color: #666;
 }
 
 .summary-row.total {
     font-weight: bold;
     font-size: 18px;
     margin-top: 10px;
+    color: #333;
+}
+
+.summary-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .promo-section {
-    margin: 20px 0;
+    width: 100%;
+    max-width: 300px;
+    align-items: center;
 }
 
 .promo-section p {
     font-size: 14px;
     color: #7f8c8d;
-    text-align: center;
+    text-align: left;
     margin-bottom: 10px;
 }
 
 .promo-input {
     display: flex;
-    justify-content: center;
     gap: 10px;
 }
 
@@ -89,20 +121,22 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
-    width: 200px;
+    flex: 1;
+    background-color: #f5f5f5;
 }
 
 .promo-input button {
-    background-color: #3498db;
+    background-color: #333;
     color: white;
     border: none;
     padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .promo-input button:hover {
-    background-color: #2980b9;
+    background-color: #555;
 }
 
 .checkout-button {
@@ -115,6 +149,7 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-top: 20px;
 }
 
 .checkout-button:hover {
@@ -134,8 +169,29 @@
         height: 40px;
     }
 
+    .quantity-input {
+        width: 50px;
+        padding: 4px;
+    }
+
     .cart-summary {
+        flex-direction: column;
+        align-items: center;
         padding: 15px;
+    }
+
+    .summary-left,
+    .summary-right {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .summary-right {
+        justify-content: center;
+    }
+
+    .promo-section {
+        max-width: 100%;
     }
 
     .summary-row {
@@ -147,7 +203,6 @@
     }
 
     .promo-input input {
-        width: 150px;
         font-size: 12px;
     }
 
@@ -178,7 +233,12 @@
         height: 30px;
     }
 
-    .promo-input input {
-        width: 120px;
+    .quantity-input {
+        width: 40px;
+        padding: 3px;
+    }
+
+    .summary-title {
+        font-size: 18px;
     }
 }

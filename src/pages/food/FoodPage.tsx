@@ -6,13 +6,13 @@ import burger from '../../assets/burger1.png';
 // Sample data for items with categories
 const itemData = Array.from({ length: 124 }, (_, index) => {
     const categories = ['food', 'alcohol', 'flowers', 'medicine'];
-    const category = categories[index % categories.length]; // Phân bổ category cho từng sản phẩm
+    const category = categories[index % categories.length];
     return {
         id: index + 1,
         name: `${category === 'food' ? 'Pizza' : category === 'alcohol' ? 'Beer' : category === 'flowers' ? 'Rose' : 'Pill'} Mushroom Sauce`,
         price: 6.15,
-        category: category, // Thêm thuộc tính category
-        image: burger, // Placeholder image
+        category: category,
+        image: burger,
     };
 });
 
@@ -21,61 +21,58 @@ const ITEMS_PER_PAGE = 20;
 const FoodPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>([]);
-    // const navigate = useNavigate();
-    const [searchParams] = useSearchParams(); // Lấy query params từ URL
+    const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>(() => {
+        // Khởi tạo cart từ localStorage ngay khi component mount
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    });
+    const [searchParams] = useSearchParams();
 
-    // Lấy category từ URL
-    const category = searchParams.get('category') || 'food'; // Mặc định là 'food' nếu không có category
-    // const search = searchParams.get('search') || 'food'; // Mặc định là 'food' nếu không có category
+    const category = searchParams.get('category') || 'food';
 
-    // Xác định tiêu đề và placeholder dựa trên category
     const categoryTitleMap: { [key: string]: string } = {
-        food: 'Thực phẩm',
+        food: 'Đồ Ăn',
         alcohol: 'Rượu Bia',
         flowers: 'Hoa',
         medicine: 'Thuốc',
     };
 
     const categoryPlaceholderMap: { [key: string]: string } = {
-        food: 'Tìm kiếm thực phẩm...',
+        food: 'Tìm kiếm đồ ăn...',
         alcohol: 'Tìm kiếm rượu bia...',
         flowers: 'Tìm kiếm hoa...',
         medicine: 'Tìm kiếm thuốc...',
     };
 
-    const title = categoryTitleMap[category] || 'Thực phẩm';
-    const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm thực phẩm...';
-
-    // Load cart from localStorage on component mount
-    useEffect(() => {
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            setCart(JSON.parse(savedCart));
-        }
-    }, []);
+    const title = categoryTitleMap[category] || 'Đồ Ăn';
+    const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm đồ ăn...';
 
     // Save cart to localStorage whenever it changes
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        // Chỉ lưu khi cart có dữ liệu
+        if (cart.length > 0) {
+            const savedCart = JSON.stringify(cart);
+            localStorage.setItem('cart', savedCart);
+            console.log('Saved cart to localStorage:', JSON.parse(savedCart));
+        }
     }, [cart]);
 
     // Add item to cart
-    const addToCart = (item: { id: number; name: string; price: number }) => {
+    const addToCart = (pizza: { id: number; name: string; price: number }) => {
         setCart((prevCart) => {
-            const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
+            const existingItem = prevCart.find((item) => item.id === pizza.id);
             if (existingItem) {
-                return prevCart.map((cartItem) =>
-                    cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
+                return prevCart.map((item) =>
+                    item.id === pizza.id ? { ...item, quantity: item.quantity + 1 } : item
                 );
             }
-            return [...prevCart, { ...item, quantity: 1 }];
+            return [...prevCart, { ...pizza, quantity: 1 }];
         });
     };
 
     // Filter items based on category and search term
     const filteredItems = itemData
-        .filter((item) => item.category === category) // Lọc theo category
+        .filter((item) => item.category === category)
         .filter((item) =>
             item.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -101,9 +98,6 @@ const FoodPage: React.FC = () => {
         <div className="food-page">
             <div className="food-header">
                 <h2 className="food-title">{title}</h2>
-                {/*<button onClick={() => navigate('/cart')} className="view-cart-button">*/}
-                {/*    Xem giỏ hàng ({cart.length})*/}
-                {/*</button>*/}
                 <input
                     type="text"
                     placeholder={placeholder}

@@ -46,9 +46,6 @@ const Navbar: React.FC = () => {
                 <Link to="/home"><p>EATNOW.</p></Link>
             </div>
             <ul className="nav-links">
-                {/*<li>*/}
-                {/*    <Link to="/food?category=food">Đồ Ăn</Link>*/}
-                {/*</li>*/}
                 <li>
                     <Link to="/food?category=food">Thực phẩm</Link>
                 </li>
@@ -96,6 +93,9 @@ const Navbar: React.FC = () => {
                             <div className="dropdown">
                                 <Link to="/profile" onClick={() => setShowDropdown(false)}>
                                     Sửa đổi thông tin cá nhân
+                                </Link>
+                                <Link to="/order-history" onClick={() => setShowDropdown(false)}>
+                                    Xem lịch sửa đặt hàng
                                 </Link>
                                 <button onClick={handleLogout}>Đăng xuất</button>
                             </div>

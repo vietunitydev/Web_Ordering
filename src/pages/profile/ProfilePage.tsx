@@ -1,4 +1,3 @@
-// ProfilePage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProfilePage.css';
@@ -21,7 +20,7 @@ const ProfilePage: React.FC = () => {
             setGender(parsedUser.gender || 'Nam');
             setEmail(parsedUser.email || 'doarviet@gmail.com');
         } else {
-            navigate('/login'); // Redirect to login if no user is found
+            navigate('/login');
         }
     }, [navigate]);
 
@@ -45,7 +44,7 @@ const ProfilePage: React.FC = () => {
     const handleDeleteAccount = () => {
         if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác.')) {
             localStorage.removeItem('user');
-            localStorage.removeItem('cart'); // Optional: clear cart on account deletion
+            localStorage.removeItem('cart');
             navigate('/home');
         }
     };
@@ -56,7 +55,7 @@ const ProfilePage: React.FC = () => {
     };
 
     if (!user) {
-        return null; // Render nothing while redirecting
+        return null;
     }
 
     return (
@@ -98,13 +97,15 @@ const ProfilePage: React.FC = () => {
                     <div className="form-group">
                         <label>Mật khẩu</label>
                         <input type="password" value="********" disabled />
-                        <button
-                            type="button"
-                            className="change-password-link"
-                            onClick={handleChangePassword}
-                        >
-                            Đổi mật khẩu
-                        </button>
+                        <div className="change-password-wrapper">
+                            <button
+                                type="button"
+                                className="change-password-link"
+                                onClick={handleChangePassword}
+                            >
+                                Đổi mật khẩu
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" className="save-btn">
                         Lưu thay đổi

@@ -9,6 +9,8 @@ import RegisterForm from "./pages/login/RegisterForm.tsx";
 import Home from "./pages/home/Home.tsx";
 import ProfilePage from "./pages/profile/ProfilePage.tsx";
 import Footer from "./components/Footer/Footer.tsx";
+import CheckoutPage from "./pages/CheckoutPage/CheckoutPage.tsx";
+import OrderHistoryPage from "./pages/OderHistoryPage/OrderHistoryPage.tsx";
 
 
 const App: React.FC = () => {
@@ -21,7 +23,8 @@ const App: React.FC = () => {
                     <Route path="/food" element={<FoodPage />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/checkout" element={<div>Checkout Page (Placeholder)</div>} />
+                    <Route path="/checkout" element={<CheckoutPage/>} />
+                    <Route path="/order-history" element={<OrderHistoryPage />} />
                 </Route>
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterForm />} />
