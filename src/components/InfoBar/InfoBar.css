@@ -1,14 +1,17 @@
+.info-bar-container {
+    margin: 6rem auto;
+    max-width: 1200px; /* Độ rộng tối đa */
+}
+
 .info-bar {
     display: flex;
     justify-content: space-around;
     align-items: center;
     background-color: #fff;
-    padding: 1rem 2rem;
-    /*border: 2px solid #007bff; !* Viền màu xanh dương *!*/
+    padding: 1.5rem 1rem;
     border-radius: 20px; /* Bo tròn viền */
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    margin: 5rem auto;
-    max-width: 1200px; /* Độ rộng tối đa */
+    margin: 0 5rem;
 }
 
 .info-item {
@@ -19,9 +22,9 @@
     gap: 0.2rem;
 }
 
-.icon {
-    font-size: 1.5rem;
-    color: #ff7f00; /* Màu cam cho biểu tượng */
+.info-item img {
+    width: 2rem; /* Kích thước biểu tượng ban đầu */
+    height: 2rem;
 }
 
 .info-item span:nth-child(2) {
@@ -33,4 +36,76 @@
 .info-item span:nth-child(3) {
     font-size: 0.8rem;
     color: #666;
+}
+
+/* Responsive cho màn hình dưới 1024px */
+@media (max-width: 1024px) {
+    .info-bar {
+        padding: 1rem; /* Giảm padding */
+        /*margin: 3rem auto; !* Giảm margin *!*/
+        max-width: 900px; /* Giảm chiều rộng tối đa */
+    }
+
+    .info-item img {
+        width: 1.8rem; /* Giảm kích thước biểu tượng */
+        height: 1.8rem;
+    }
+
+    .info-item span:nth-child(2) {
+        font-size: 1rem; /* Giảm kích thước chữ */
+    }
+
+    .info-item span:nth-child(3) {
+        font-size: 0.75rem;
+    }
+}
+
+/* Responsive cho màn hình dưới 768px: Chuyển sang layout dọc */
+@media (max-width: 768px) {
+    .info-bar {
+        flex-direction: column; /* Chuyển sang layout dọc */
+        gap: 1.5rem; /* Thêm khoảng cách giữa các item */
+        padding: 1.5rem;
+        /*margin: 2rem auto;*/
+        max-width: 500px; /* Giảm chiều rộng tối đa */
+    }
+
+    .info-item {
+        gap: 0.3rem; /* Tăng khoảng cách giữa các phần tử trong info-item */
+    }
+
+    .info-item img {
+        width: 1.5rem; /* Giảm kích thước biểu tượng */
+        height: 1.5rem;
+    }
+
+    .info-item span:nth-child(2) {
+        font-size: 0.9rem;
+    }
+
+    .info-item span:nth-child(3) {
+        font-size: 0.7rem;
+    }
+}
+
+/* Responsive cho màn hình dưới 480px: Tiếp tục tối ưu */
+@media (max-width: 480px) {
+    .info-bar {
+        padding: 1rem;
+        margin: 1.5rem auto;
+        max-width: 90%; /* Chiếm 90% chiều rộng màn hình */
+    }
+
+    .info-item img {
+        width: 1.2rem; /* Giảm kích thước biểu tượng hơn nữa */
+        height: 1.2rem;
+    }
+
+    .info-item span:nth-child(2) {
+        font-size: 0.85rem;
+    }
+
+    .info-item span:nth-child(3) {
+        font-size: 0.65rem;
+    }
 }

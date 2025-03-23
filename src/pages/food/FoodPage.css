@@ -1,8 +1,9 @@
-/* FoodPage.css */
 .food-page {
     padding: 20px;
     background-color: #f5f5f5;
     min-height: 100vh;
+    max-width: 1300px;
+    margin: 0 auto;
 }
 
 .food-header {
@@ -33,7 +34,7 @@
 
 .pizza-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(5, 1fr); /* 5 sản phẩm trên 1 dòng */
     gap: 20px;
     padding: 0 20px;
 }
@@ -132,14 +133,20 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+
+/* Màn hình dưới 1200px: Giảm kích thước item và gap */
+@media (max-width: 1200px) {
     .pizza-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(5, 1fr); /* Vẫn giữ 5 sản phẩm trên 1 dòng */
+        gap: 15px; /* Giảm gap */
+    }
+
+    .pizza-card {
+        padding: 12px;
     }
 
     .pizza-image {
-        height: 120px;
+        height: 130px; /* Giảm chiều cao hình ảnh */
     }
 
     .pizza-name {
@@ -149,21 +156,61 @@
     .pizza-price {
         font-size: 14px;
     }
+
+    .add-to-cart-button {
+        padding: 7px 10px;
+        font-size: 14px;
+    }
 }
 
-@media (max-width: 480px) {
-    .food-title {
-        font-size: 24px;
+/* Màn hình dưới 1024px: Giảm xuống 4 sản phẩm trên 1 dòng */
+@media (max-width: 1024px) {
+    .pizza-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 sản phẩm trên 1 dòng */
+        gap: 12px; /* Giảm gap */
+    }
+
+    .pizza-card {
+        padding: 10px;
+    }
+
+    .pizza-image {
+        height: 120px;
+    }
+
+    .pizza-name {
+        font-size: 15px;
+    }
+
+    .pizza-price {
+        font-size: 13px;
+    }
+
+    .add-to-cart-button {
+        padding: 6px 8px;
+        font-size: 13px;
     }
 
     .search-bar {
-        font-size: 14px;
+        max-width: 350px;
+        font-size: 15px;
         padding: 8px;
     }
 
+    .food-title {
+        font-size: 26px;
+    }
+}
+
+/* Màn hình dưới 768px: Vẫn giữ 4 sản phẩm trên 1 dòng, thu nhỏ hơn */
+@media (max-width: 768px) {
     .pizza-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(4, 1fr); /* Vẫn giữ 4 sản phẩm trên 1 dòng */
+        gap: 10px; /* Giảm gap */
+    }
+
+    .pizza-card {
+        padding: 8px;
     }
 
     .pizza-image {
@@ -178,8 +225,71 @@
         font-size: 12px;
     }
 
-    .pagination button {
-        padding: 3px 8px;
+    .add-to-cart-button {
+        padding: 5px 7px;
+        font-size: 12px;
+    }
+
+    .search-bar {
+        max-width: 300px;
         font-size: 14px;
+        padding: 7px;
+    }
+
+    .food-title {
+        font-size: 24px;
+    }
+
+    .pagination button {
+        padding: 4px 8px;
+        font-size: 14px;
+    }
+}
+
+/* Màn hình dưới 480px: Giảm xuống 2 sản phẩm trên 1 dòng */
+@media (max-width: 480px) {
+    .pizza-grid {
+        grid-template-columns: repeat(2, 1fr); /* Giảm xuống 2 sản phẩm trên 1 dòng */
+        gap: 8px; /* Giảm gap */
+    }
+
+    .pizza-card {
+        padding: 6px;
+    }
+
+    .pizza-image {
+        height: 80px;
+    }
+
+    .pizza-name {
+        font-size: 13px;
+    }
+
+    .pizza-price {
+        font-size: 11px;
+    }
+
+    .add-to-cart-button {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+
+    .search-bar {
+        max-width: 250px;
+        font-size: 13px;
+        padding: 6px;
+    }
+
+    .food-title {
+        font-size: 22px;
+    }
+
+    .result-count {
+        font-size: 12px;
+    }
+
+    .pagination button {
+        padding: 3px 6px;
+        font-size: 12px;
     }
 }

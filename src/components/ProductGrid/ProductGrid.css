@@ -1,8 +1,9 @@
 .product-grid {
-    margin-top: 3rem;
+    margin: 3rem auto;
     padding: 0 5rem;
     text-align: center;
     background-color: #fff;
+    max-width: 1300px;
 }
 
 .product-grid p {
@@ -103,7 +104,7 @@
 .see-more {
     display: inline-flex;
     align-items: center;
-    background-color: #ff7f00;
+    background: linear-gradient(to top, #F48E28, #EFAB68);
     padding: 0.5rem 0.5rem;
     border: none;
     border-radius: 30px;

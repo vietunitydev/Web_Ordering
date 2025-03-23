@@ -46,9 +46,9 @@ const Navbar: React.FC = () => {
                 <Link to="/home"><p>EATNOW.</p></Link>
             </div>
             <ul className="nav-links">
-                <li>
-                    <Link to="/food?category=food">Đồ Ăn</Link>
-                </li>
+                {/*<li>*/}
+                {/*    <Link to="/food?category=food">Đồ Ăn</Link>*/}
+                {/*</li>*/}
                 <li>
                     <Link to="/food?category=food">Thực phẩm</Link>
                 </li>

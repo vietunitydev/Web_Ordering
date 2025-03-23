@@ -3,6 +3,8 @@
     padding: 40px 20px;
     color: #666;
     font-family: Arial, sans-serif;
+    max-width: 1300px;
+    margin: 0 auto;
 }
 
 .footer-content {

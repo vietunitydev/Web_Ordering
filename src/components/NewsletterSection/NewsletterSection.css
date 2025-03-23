@@ -1,0 +1,147 @@
+.newsletter-container {
+  position: relative; /* Đặt container ở vị trí relative để ảnh absolute tham chiếu */
+  display: flex; /* Sử dụng flexbox để xếp ngang */
+  flex-direction: row; /* Xếp các phần tử theo hàng ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-items: center;
+  background-color: #000;
+  padding: 3rem; /* Padding xung quanh */
+  margin: 5rem auto; /* Margin xung quanh, auto làm cho chiều ngang ở giữa*/
+  border-radius: 3rem; /* Bo góc */
+  max-width: 1000px; /* Giới hạn chiều rộng tối đa */
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng */
+}
+
+.burger-image {
+  position: absolute;
+  left: -2rem; /* Ảnh vượt ra ngoài bên trái */
+  top: 50%;
+  transform: translateY(-50%); /* Căn giữa theo chiều dọc */
+  width: 25rem; /* Kích thước ảnh */
+  /*height: auto;*/
+}
+
+.text-form-container {
+  margin-left: auto; /* Neo phần text/form ở bên phải */
+  text-align: left; /* Căn trái nội dung bên trong */
+  color: #fff;
+  max-width: 400px; /* Giới hạn chiều rộng để không bị tràn */
+}
+
+/* Điều chỉnh khoảng cách khi thu nhỏ màn hình */
+@media (max-width: 1200px) {
+  .burger-image {
+    left: -1.5rem; /* Kéo ảnh gần vào container hơn */
+    width: 23rem; /* Giảm kích thước ảnh */
+  }
+
+  .text-form-container {
+    margin-left: auto; /* Vẫn neo bên phải */
+  }
+}
+
+@media (max-width: 1000px) {
+  .burger-image {
+    left: -1rem; /* Tiếp tục kéo ảnh gần hơn */
+    width: 20rem;
+  }
+}
+
+@media (max-width: 850px) {
+  .burger-image {
+    left: 0; /* Ảnh không vượt ra ngoài nữa */
+    width: 18em;
+  }
+
+  /*.text-form-container {*/
+  /*  margin-left: 13rem; !* Bắt đầu giảm khoảng cách, không neo bên phải nữa *!*/
+  /*}*/
+}
+
+/* Responsive: Chuyển sang layout dọc khi ảnh và text chạm nhau */
+@media (max-width: 768px) {
+  .newsletter-container {
+    flex-direction: column; /* Chuyển sang layout dọc */
+    align-items: center; /* Căn giữa các phần tử */
+    padding: 5rem 1rem 2rem 1rem; /* Tăng padding-top để dành chỗ cho ảnh */
+    margin: 2rem; /* Giảm margin trên màn hình nhỏ */
+  }
+
+  .burger-image {
+    position: absolute;
+    left: 50%;
+    top: -2rem; /* Ảnh vượt ra ngoài phía trên */
+    transform: translateX(-50%); /* Căn giữa theo chiều ngang */
+    width: 12rem; /* Kích thước ảnh trên màn hình nhỏ */
+  }
+
+  .text-form-container {
+    margin-left: 0; /* Xóa margin-left */
+    text-align: center; /* Căn giữa text trên màn hình nhỏ */
+    max-width: 100%; /* Cho phép chiếm toàn bộ chiều rộng */
+  }
+
+  .email-form {
+    justify-content: center; /* Căn giữa form trên màn hình nhỏ */
+    flex-wrap: wrap; /* Cho phép form xuống dòng nếu cần */
+  }
+
+  .email-form input {
+    width: 100%; /* Input chiếm toàn bộ chiều rộng trên màn hình nhỏ */
+    max-width: 250px; /* Giới hạn chiều rộng tối đa */
+  }
+
+  .email-form button {
+    margin-top: 10px; /* Thêm khoảng cách nếu xuống dòng */
+  }
+}
+
+/* Responsive cho màn hình rất nhỏ (dưới 480px) */
+@media (max-width: 480px) {
+  .newsletter-container {
+    padding: 4rem 0.5rem 1rem 0.5rem; /* Giảm padding thêm */
+    margin: 1rem; /* Giảm margin thêm */
+  }
+
+  .burger-image {
+    width: 10rem; /* Giảm kích thước ảnh hơn nữa */
+    top: -1.5rem; /* Giảm mức vượt ra ngoài */
+  }
+
+  .text-form-container h2 {
+    font-size: 1.2rem; /* Giảm kích thước chữ */
+  }
+}
+
+/* Các style khác giữ nguyên */
+.text-form-container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.email-form {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Khoảng cách giữa input và button */
+}
+
+.email-form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 200px; /* Chiều rộng của input */
+}
+
+.email-form button {
+  background-color: #ff6200; /* Màu cam */
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.email-form button:hover {
+  background-color: #e55b00; /* Hiệu ứng hover */
+}

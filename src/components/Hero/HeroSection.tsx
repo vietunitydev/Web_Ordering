@@ -1,5 +1,7 @@
 import './HeroSection.css';
 import cake1 from '../../assets/cake1.png';
+import pizza from '../../assets/pizza1.png';
+import burger from '../../assets/burger1.png';
 
 interface MenuItem {
     id: number;
@@ -11,8 +13,8 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
     { id: 1, name: 'Pizza', description: 'Mushroom Sauce', price: '$6.15', image: cake1 },
-    { id: 2, name: 'Cake', description: 'Mushroom Sauce', price: '$5.15', image: cake1 },
-    { id: 3, name: 'Burger', description: 'Mushroom Sauce', price: '$5.15', image: cake1 },
+    { id: 2, name: 'Cake', description: 'Mushroom Sauce', price: '$5.15', image: pizza },
+    { id: 3, name: 'Burger', description: 'Mushroom Sauce', price: '$5.15', image: burger },
     { id: 4, name: 'Cake', description: 'Mushroom Sauce', price: '$5.15', image: cake1 },
 ];
 

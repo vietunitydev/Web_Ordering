@@ -7,7 +7,8 @@ const Footer: React.FC = () => {
             <div className="footer-content">
                 <div className="footer-section">
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Commodo libero viverra dapibus odio sit malesuada in quis. Arcu tristique elementum viverra integer id.
+                        Thưởng thức món ngon mỗi ngày <br/>
+                        Đặt đồ ăn nhanh chóng và tiện lợi cùng chúng tôi!
                     </p>
                     <div className= "social-icons">
                         <a href="#" aria-label="Facebook"><span className="icon facebook" /></a>

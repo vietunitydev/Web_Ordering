@@ -1,23 +1,51 @@
-// FoodPage.tsx
 import React, { useState, useEffect } from 'react';
 import './FoodPage.css';
-import {useNavigate} from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import burger from '../../assets/burger1.png';
 
-// Sample data for pizzas
-const pizzaData = Array.from({ length: 124 }, (_, index) => ({
-    id: index + 1,
-    name: 'Pizza Mushroom Sauce',
-    price: 6.15,
-    image: 'https://via.placeholder.com/150', // Placeholder image
-}));
+// Sample data for items with categories
+const itemData = Array.from({ length: 124 }, (_, index) => {
+    const categories = ['food', 'alcohol', 'flowers', 'medicine'];
+    const category = categories[index % categories.length]; // Phân bổ category cho từng sản phẩm
+    return {
+        id: index + 1,
+        name: `${category === 'food' ? 'Pizza' : category === 'alcohol' ? 'Beer' : category === 'flowers' ? 'Rose' : 'Pill'} Mushroom Sauce`,
+        price: 6.15,
+        category: category, // Thêm thuộc tính category
+        image: burger, // Placeholder image
+    };
+});
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 20;
 
 const FoodPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>([]);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
+    const [searchParams] = useSearchParams(); // Lấy query params từ URL
+
+    // Lấy category từ URL
+    const category = searchParams.get('category') || 'food'; // Mặc định là 'food' nếu không có category
+    // const search = searchParams.get('search') || 'food'; // Mặc định là 'food' nếu không có category
+
+    // Xác định tiêu đề và placeholder dựa trên category
+    const categoryTitleMap: { [key: string]: string } = {
+        food: 'Thực phẩm',
+        alcohol: 'Rượu Bia',
+        flowers: 'Hoa',
+        medicine: 'Thuốc',
+    };
+
+    const categoryPlaceholderMap: { [key: string]: string } = {
+        food: 'Tìm kiếm thực phẩm...',
+        alcohol: 'Tìm kiếm rượu bia...',
+        flowers: 'Tìm kiếm hoa...',
+        medicine: 'Tìm kiếm thuốc...',
+    };
+
+    const title = categoryTitleMap[category] || 'Thực phẩm';
+    const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm thực phẩm...';
 
     // Load cart from localStorage on component mount
     useEffect(() => {
@@ -33,27 +61,29 @@ const FoodPage: React.FC = () => {
     }, [cart]);
 
     // Add item to cart
-    const addToCart = (pizza: { id: number; name: string; price: number }) => {
+    const addToCart = (item: { id: number; name: string; price: number }) => {
         setCart((prevCart) => {
-            const existingItem = prevCart.find((item) => item.id === pizza.id);
+            const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
             if (existingItem) {
-                return prevCart.map((item) =>
-                    item.id === pizza.id ? { ...item, quantity: item.quantity + 1 } : item
+                return prevCart.map((cartItem) =>
+                    cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
                 );
             }
-            return [...prevCart, { ...pizza, quantity: 1 }];
+            return [...prevCart, { ...item, quantity: 1 }];
         });
     };
 
-    // Filter pizzas based on search term
-    const filteredPizzas = pizzaData.filter((pizza) =>
-        pizza.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filter items based on category and search term
+    const filteredItems = itemData
+        .filter((item) => item.category === category) // Lọc theo category
+        .filter((item) =>
+            item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
     // Calculate pagination
-    const totalPages = Math.ceil(filteredPizzas.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const currentPizzas = filteredPizzas.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const currentItems = filteredItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     // Handle page change
     const handlePageChange = (page: number) => {
@@ -62,16 +92,21 @@ const FoodPage: React.FC = () => {
         }
     };
 
+    // Reset current page when category changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [category, searchTerm]);
+
     return (
         <div className="food-page">
             <div className="food-header">
-                <h2 className="food-title">Đồ ăn</h2>
-                <button onClick={() => navigate('/cart')} className="view-cart-button">
-                    Xem giỏ hàng ({cart.length})
-                </button>
+                <h2 className="food-title">{title}</h2>
+                {/*<button onClick={() => navigate('/cart')} className="view-cart-button">*/}
+                {/*    Xem giỏ hàng ({cart.length})*/}
+                {/*</button>*/}
                 <input
                     type="text"
-                    placeholder="Tìm kiếm pizza..."
+                    placeholder={placeholder}
                     className="search-bar"
                     value={searchTerm}
                     onChange={(e) => {
@@ -79,16 +114,16 @@ const FoodPage: React.FC = () => {
                         setCurrentPage(1);
                     }}
                 />
-                <p className="result-count">{filteredPizzas.length} kết quả</p>
+                <p className="result-count">{filteredItems.length} kết quả</p>
             </div>
 
             <div className="pizza-grid">
-                {currentPizzas.map((pizza) => (
-                    <div key={pizza.id} className="pizza-card">
-                        <img src={pizza.image} alt={pizza.name} className="pizza-image" />
-                        <h3 className="pizza-name">{pizza.name}</h3>
-                        <p className="pizza-price">${pizza.price.toFixed(2)}</p>
-                        <button onClick={() => addToCart(pizza)} className="add-to-cart-button">
+                {currentItems.map((item) => (
+                    <div key={item.id} className="pizza-card">
+                        <img src={item.image} alt={item.name} className="pizza-image" />
+                        <h3 className="pizza-name">{item.name}</h3>
+                        <p className="pizza-price">${item.price.toFixed(2)}</p>
+                        <button onClick={() => addToCart(item)} className="add-to-cart-button">
                             Thêm vào giỏ hàng
                         </button>
                     </div>
