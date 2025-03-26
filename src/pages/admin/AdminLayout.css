@@ -1,0 +1,123 @@
+.admin-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #e67e22; /* Màu cam giống trong hình */
+    margin: 0;
+}
+
+.admin-header p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.admin-user {
+    display: flex;
+    align-items: center;
+}
+
+.user-icon {
+    font-size: 24px;
+}
+
+.admin-content {
+    display: flex;
+    flex: 1;
+}
+
+.admin-sidebar {
+    width: 200px;
+    background-color: white;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-btn {
+    background: none;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.sidebar-btn img {
+    width: 40px;
+    height: 40px;
+}
+
+.sidebar-btn p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sidebar-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.sidebar-btn.active {
+    background-color: #e67e22; /* Màu cam khi active */
+    color: white;
+    border-color: #e67e22;
+}
+
+.sidebar-btn.active p {
+    color: white;
+}
+
+.admin-main {
+    flex: 1;
+    padding: 30px;
+    background-color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-content {
+        flex-direction: column;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .sidebar-btn {
+        flex: 1;
+        justify-content: center; /* Căn giữa trên màn hình nhỏ */
+    }
+
+    .admin-main {
+        padding: 20px;
+    }
+}

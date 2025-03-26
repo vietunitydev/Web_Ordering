@@ -1,0 +1,60 @@
+.admin-orders-page {
+    max-width: 100%;
+}
+
+.admin-orders-page h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.no-orders {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+    padding: 20px;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.orders-table th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+    color: #333;
+}
+
+.orders-table td {
+    color: #666;
+}
+
+.orders-table select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .orders-table th,
+    .orders-table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .orders-table select {
+        font-size: 12px;
+        padding: 4px;
+    }
+}

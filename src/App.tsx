@@ -11,6 +11,9 @@ import ProfilePage from "./pages/profile/ProfilePage.tsx";
 import Footer from "./components/Footer/Footer.tsx";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage.tsx";
 import OrderHistoryPage from "./pages/OderHistoryPage/OrderHistoryPage.tsx";
+import AddItemPage from "./pages/admin/AddItemPage.tsx";
+import ListItemsPage from "./pages/admin/ListItemPage.tsx";
+import AdminOrdersPage from "./pages/admin/AdminOrderPage.tsx";
 
 
 const App: React.FC = () => {
@@ -28,6 +31,10 @@ const App: React.FC = () => {
                 </Route>
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterForm />} />
+                <Route path="/admin" element={<AddItemPage />} />
+                <Route path="/admin/add-item" element={<AddItemPage />} />
+                <Route path="/admin/list-items" element={<ListItemsPage />} />
+                <Route path="/admin/orders" element={<AdminOrdersPage />} />
             </Routes>
             <Footer />
         </Router>

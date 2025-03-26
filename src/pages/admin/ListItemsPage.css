@@ -1,0 +1,80 @@
+.list-items-page {
+    max-width: 100%;
+}
+
+.list-items-page h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.no-items {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+    padding: 20px;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table th,
+.items-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.items-table th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+    color: #333;
+}
+
+.items-table td {
+    color: #666;
+}
+
+.item-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .items-table th,
+    .items-table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .item-image {
+        width: 40px;
+        height: 40px;
+    }
+
+    .delete-btn {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
