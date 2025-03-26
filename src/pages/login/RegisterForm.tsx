@@ -1,21 +1,26 @@
 // RegisterForm.tsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import './RegisterForm.css';
 
 const RegisterForm: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     // Basic validation
-    if (!username || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !address || !phone) {
       setError('Vui lòng nhập đầy đủ thông tin.');
       return;
     }
@@ -25,13 +30,34 @@ const RegisterForm: React.FC = () => {
       return;
     }
 
-    // Simulate saving user data (in a real app, this would be an API call)
-    const userData = { username, email, password };
-    localStorage.setItem('user', JSON.stringify(userData));
+    setLoading(true);
 
-    setError('');
-    // Redirect to NavBar page
-    navigate('/home');
+    try {
+      // Call the register API
+      const response = await axios.post('http://localhost:4999/api/auth/register', {
+        name,
+        email,
+        password,
+        address,
+        phone
+      });
+
+      if (response.data.success) {
+        // Store token and user info in local storage
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        // Redirect to home page after successful registration
+        navigate('/home');
+      } else {
+        setError('Đăng ký không thành công.');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Đăng ký không thành công. Vui lòng thử lại.');
+      console.error('Registration error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,16 +69,16 @@ const RegisterForm: React.FC = () => {
             <div className="input-group">
               <input
                   type="text"
-                  placeholder="Tên người dùng"
+                  placeholder="Họ và tên"
                   className="input-field"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="input-group">
               <input
-                  type="text"
-                  placeholder="Tên đăng nhập hoặc Email"
+                  type="email"
+                  placeholder="Email"
                   className="input-field"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -76,8 +102,30 @@ const RegisterForm: React.FC = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
-            <button type="submit" className="register-button">
-              Đăng Ký
+            <div className="input-group">
+              <input
+                  type="text"
+                  placeholder="Địa chỉ"
+                  className="input-field"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
+            <div className="input-group">
+              <input
+                  type="text"
+                  placeholder="Số điện thoại"
+                  className="input-field"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            <button
+                type="submit"
+                className="register-button"
+                disabled={loading}
+            >
+              {loading ? 'Đang xử lý...' : 'Đăng Ký'}
             </button>
             <p className="policy-text">
               Bằng cách đăng nhập hoặc đăng ký, bạn đồng ý với{' '}

@@ -1,31 +1,49 @@
 // LoginForm.tsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import './LoginForm.css';
 
 const LoginForm: React.FC = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
 
-        if (!username || !password) {
-            setError('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.');
+        if (!email || !password) {
+            setError('Vui lòng nhập đầy đủ email và mật khẩu.');
             return;
         }
 
-        const validUsername = 'user@example.com';
-        const validPassword = 'password123';
+        setLoading(true);
 
-        if (username === validUsername && password === validPassword) {
-            setError('');
-            localStorage.setItem('user', JSON.stringify({ username }));
-            navigate('/home'); // Redirect to Home (FoodPage)
-        } else {
-            setError('Tên đăng nhập hoặc mật khẩu không đúng.');
+        try {
+            // Call the login API
+            const response = await axios.post('http://localhost:4999/api/auth/login', {
+                email,
+                password
+            });
+
+            if (response.data.success) {
+                // Store token and user info in local storage
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+
+                // Redirect to home page
+                navigate('/home');
+            } else {
+                setError('Đăng nhập không thành công.');
+            }
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Đăng nhập không thành công. Vui lòng thử lại.');
+            console.error('Login error:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -37,11 +55,11 @@ const LoginForm: React.FC = () => {
                 <form onSubmit={handleLogin}>
                     <div className="input-group">
                         <input
-                            type="text"
-                            placeholder="Tên đăng nhập hoặc Email"
+                            type="email"
+                            placeholder="Email"
                             className="input-field"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
                     <div className="input-group">
@@ -61,8 +79,12 @@ const LoginForm: React.FC = () => {
                             Quên mật khẩu?
                         </a>
                     </div>
-                    <button type="submit" className="login-button">
-                        Đăng Nhập
+                    <button
+                        type="submit"
+                        className="login-button"
+                        disabled={loading}
+                    >
+                        {loading ? 'Đang xử lý...' : 'Đăng Nhập'}
                     </button>
                     <p className="policy-text">
                         Bằng cách đăng nhập hoặc đăng ký, bạn đồng ý với{' '}
@@ -78,3 +100,5 @@ const LoginForm: React.FC = () => {
 };
 
 export default LoginForm;
+
+// Axios is a popular HTTP Client library for JavaScript and Node.js. It helps you make HTTP requests (requests) to APIs or web services from your application.
