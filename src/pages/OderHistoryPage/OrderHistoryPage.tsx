@@ -28,9 +28,9 @@ interface Order {
 
 const OrderHistoryPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
+    const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
     const navigate = useNavigate();
 
-    // Load order history from localStorage on mount
     useEffect(() => {
         const orderHistory = localStorage.getItem('orderHistory');
         if (orderHistory) {
@@ -38,7 +38,6 @@ const OrderHistoryPage: React.FC = () => {
         }
     }, []);
 
-    // Navigate back to home if needed
     const handleBackToHome = () => {
         navigate('/');
     };
@@ -63,42 +62,52 @@ const OrderHistoryPage: React.FC = () => {
                                     <span className={`status ${order.status === 'Đang xử lý' ? 'processing' : 'completed'}`}>
                                         {order.status}
                                     </span>
+                                    <button
+                                        className="toggle-details-btn"
+                                        onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                                    >
+                                        {expandedOrderId === order.id ? 'Ẩn chi tiết' : 'Xem chi tiết'}
+                                    </button>
                                 </div>
                                 <p className="order-date">Ngày đặt: {order.date}</p>
-                                <div className="order-details">
-                                    <h4>Chi tiết đơn hàng</h4>
-                                    <table className="order-table">
-                                        <thead>
-                                        <tr>
-                                            <th>Sản phẩm</th>
-                                            <th>Số lượng</th>
-                                            <th>Giá</th>
-                                            <th>Tổng</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {order.items.map((item) => (
-                                            <tr key={item.id}>
-                                                <td>{item.name}</td>
-                                                <td>{item.quantity}</td>
-                                                <td>${item.price.toFixed(2)}</td>
-                                                <td>${(item.price * item.quantity).toFixed(2)}</td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </table>
-                                    <div className="order-summary">
-                                        <p>Phí giao hàng: ${order.deliveryFee.toFixed(2)}</p>
-                                        <p>Tổng cộng: ${order.total.toFixed(2)}</p>
-                                    </div>
-                                </div>
-                                <div className="delivery-info">
-                                    <h4>Thông tin giao hàng</h4>
-                                    <p>Họ tên: {order.deliveryInfo.firstName} {order.deliveryInfo.lastName}</p>
-                                    <p>Email: {order.deliveryInfo.email}</p>
-                                    <p>Địa chỉ: {order.deliveryInfo.address}</p>
-                                    <p>Số điện thoại: {order.deliveryInfo.phone}</p>
-                                </div>
+                                {expandedOrderId === order.id && (
+                                    <>
+                                        <div className="order-details">
+                                            <h4>Chi tiết đơn hàng</h4>
+                                            <table className="order-table">
+                                                <thead>
+                                                <tr>
+                                                    <th>Sản phẩm</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Giá</th>
+                                                    <th>Tổng</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {order.items.map((item) => (
+                                                    <tr key={item.id}>
+                                                        <td>{item.name}</td>
+                                                        <td>{item.quantity}</td>
+                                                        <td>${item.price.toFixed(2)}</td>
+                                                        <td>${(item.price * item.quantity).toFixed(2)}</td>
+                                                    </tr>
+                                                ))}
+                                                </tbody>
+                                            </table>
+                                            <div className="order-summary">
+                                                <p>Phí giao hàng: ${order.deliveryFee.toFixed(2)}</p>
+                                                <p>Tổng cộng: ${order.total.toFixed(2)}</p>
+                                            </div>
+                                        </div>
+                                        <div className="delivery-info">
+                                            <h4>Thông tin giao hàng</h4>
+                                            <p>Họ tên: {order.deliveryInfo.firstName} {order.deliveryInfo.lastName}</p>
+                                            <p>Email: {order.deliveryInfo.email}</p>
+                                            <p>Địa chỉ: {order.deliveryInfo.address}</p>
+                                            <p>Số điện thoại: {order.deliveryInfo.phone}</p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         ))}
                     </div>

@@ -131,6 +131,21 @@
     color: #666;
 }
 
+.toggle-details-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.toggle-details-btn:hover {
+    background-color: #2980b9;
+}
+
 .order-summary {
     margin-top: 10px;
 }
