@@ -1,4 +1,8 @@
 /* LoginForm.css */
+* {
+    box-sizing: border-box;
+}
+
 .login-container {
     display: flex;
     justify-content: center;
@@ -18,6 +22,10 @@
     text-align: center;
 }
 
+/*.login-card form {*/
+/*    */
+/*}*/
+
 .login-title {
     color: #f39c12;
     font-size: 24px;
@@ -26,6 +34,7 @@
 
 .input-group {
     margin-bottom: 15px;
+    width: 100%;
 }
 
 .input-field {

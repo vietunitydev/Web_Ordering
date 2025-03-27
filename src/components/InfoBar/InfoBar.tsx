@@ -16,12 +16,12 @@ const InfoBar = () => {
                 <div className="info-item">
                     <img src={location} alt="item"/>
                     <span>Thanh Xuân, Hà Nội</span>
-                    <span>Our Location</span>
+                    <span>Địa Chỉ</span>
                 </div>
                 <div className="info-item">
                     <img src={phone} alt="item"/>
                     <span>+84 973 870 244</span>
-                    <span>Phone Number</span>
+                    <span>Số điện thoại</span>
                 </div>
             </div>
         </div>

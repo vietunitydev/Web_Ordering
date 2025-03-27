@@ -1,6 +1,10 @@
 import React from 'react';
 import './Footer.css';
 
+import insta from '../../assets/instagram.png';
+import facebook from '../../assets/facebook.png';
+import twitter from '../../assets/twitter.png';
+
 const Footer: React.FC = () => {
     return (
         <footer className="footer">
@@ -11,9 +15,9 @@ const Footer: React.FC = () => {
                         Đặt đồ ăn nhanh chóng và tiện lợi cùng chúng tôi!
                     </p>
                     <div className= "social-icons">
-                        <a href="#" aria-label="Facebook"><span className="icon facebook" /></a>
-                        <a href="" aria-label="Twitter"><span className="icon twitter" /></a>
-                        <a href="" aria-label="Instagram"><span className="icon instagram" /></a>
+                        <a href="#" aria-label="Facebook"><img src={insta} alt="insta"/></a>
+                        <a href="" aria-label="Twitter"><img src={facebook} alt="facebook"/></a>
+                        <a href="" aria-label="Instagram"><img src={twitter} alt="twitter"/></a>
                     </div>
                 </div>
                 <div className="footer-section">
