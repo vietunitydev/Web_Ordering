@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CheckoutPage.css';
 
@@ -9,19 +9,32 @@ const CheckoutPage: React.FC = () => {
     });
     const [formData, setFormData] = useState({
         firstName: '',
-        lastName: '',
         email: '',
         address: '',
         phone: '',
     });
     const navigate = useNavigate();
 
-    // Calculate totals
+    // Lấy thông tin người dùng từ localStorage khi component mount
+    useEffect(() => {
+        const userInfo = localStorage.getItem('user');
+        if (userInfo) {
+            const user = JSON.parse(userInfo);
+            setFormData({
+                firstName: user.name || '',
+                email: user.email || '',
+                address: user.address || '',
+                phone: user.phone || '',
+            });
+        }
+    }, []); // Mảng rỗng đảm bảo useEffect chỉ chạy một lần khi component mount
+
+    // Tính toán tổng giá trị
     const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const deliveryFee = 2;
     const total = subtotal + deliveryFee;
 
-    // Handle form input changes
+    // Xử lý thay đổi input
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -30,8 +43,9 @@ const CheckoutPage: React.FC = () => {
         }));
     };
 
+    // Xử lý khi nhấn nút "Proceed to Payment"
     const handleProceedToPayment = () => {
-        if (!formData.firstName || !formData.lastName || !formData.email || !formData.address || !formData.phone) {
+        if (!formData.firstName || !formData.email || !formData.address || !formData.phone) {
             alert('Please fill in all delivery information fields.');
             return;
         }
@@ -74,14 +88,6 @@ const CheckoutPage: React.FC = () => {
                             name="firstName"
                             placeholder="First Name"
                             value={formData.firstName}
-                            onChange={handleInputChange}
-                            className="form-input"
-                        />
-                        <input
-                            type="text"
-                            name="lastName"
-                            placeholder="Last Name"
-                            value={formData.lastName}
                             onChange={handleInputChange}
                             className="form-input"
                         />
