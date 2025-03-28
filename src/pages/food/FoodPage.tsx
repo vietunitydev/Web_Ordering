@@ -20,7 +20,7 @@ const itemData = Array.from({ length: 124 }, (_, index) => {
 const ITEMS_PER_PAGE = 20;
 
 const FoodPage: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState('');
+    // const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [searchParams] = useSearchParams();
     const { dispatch } = useAppContext();
@@ -35,16 +35,16 @@ const FoodPage: React.FC = () => {
         other: 'Khác',
     };
 
-    const categoryPlaceholderMap: { [key: string]: string } = {
-        main: 'Tìm kiếm món chính...',
-        dessert: 'Tìm kiếm tráng miệng',
-        fast_food: 'Tìm kiếm đồ ăn nhanh',
-        drinks: 'Tìm kiếm đồ uống',
-        other: 'Tìm kiếm khác',
-    };
+    // const categoryPlaceholderMap: { [key: string]: string } = {
+    //     main: 'Tìm kiếm món chính...',
+    //     dessert: 'Tìm kiếm tráng miệng',
+    //     fast_food: 'Tìm kiếm đồ ăn nhanh',
+    //     drinks: 'Tìm kiếm đồ uống',
+    //     other: 'Tìm kiếm khác',
+    // };
 
     const title = categoryTitleMap[category] || 'Món chính';
-    const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm món chính...';
+    // const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm món chính...';
 
     // Add item to cart using dispatch
     const addToCart = (pizza: { id: number; name: string; price: number }) => {
@@ -53,8 +53,8 @@ const FoodPage: React.FC = () => {
 
     // Filter items based on category and search term
     const filteredItems = itemData
-        .filter((item) => item.category === category)
-        .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        .filter((item) => item.category === category);
+        // .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
     // Calculate pagination
     const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
@@ -71,22 +71,22 @@ const FoodPage: React.FC = () => {
     // Reset current page when category or search term changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [category, searchTerm]);
+    }, [category]);
 
     return (
         <div className="food-page">
             <div className="food-header">
                 <h2 className="food-title">{title}</h2>
-                <input
-                    type="text"
-                    placeholder={placeholder}
-                    className="search-bar"
-                    value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setCurrentPage(1);
-                    }}
-                />
+                {/*<input*/}
+                {/*    type="text"*/}
+                {/*    placeholder={placeholder}*/}
+                {/*    className="search-bar"*/}
+                {/*    value={searchTerm}*/}
+                {/*    onChange={(e) => {*/}
+                {/*        setSearchTerm(e.target.value);*/}
+                {/*        setCurrentPage(1);*/}
+                {/*    }}*/}
+                {/*/>*/}
                 <p className="result-count">{filteredItems.length} kết quả</p>
             </div>
 
