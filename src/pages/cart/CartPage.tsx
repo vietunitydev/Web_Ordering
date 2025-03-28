@@ -1,42 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CartPage.css';
 import burger from '../../assets/burger1.png';
+import {actions, useAppContext} from "../../components/AppContext/AppContext.tsx";
 
 const CartPage: React.FC = () => {
-    const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>(() => {
-        const savedCart = localStorage.getItem('cart');
-        return savedCart ? JSON.parse(savedCart) : [];
-    });
+    const { state, dispatch } = useAppContext();
     const [promoCode, setPromoCode] = useState('');
     const navigate = useNavigate();
-
-    // Save cart to localStorage whenever it changes
-    useEffect(() => {
-        if (cart.length > 0) {
-            const savedCart = JSON.stringify(cart);
-            localStorage.setItem('cart', savedCart);
-            console.log('Saved cart to localStorage in CartPage:', JSON.parse(savedCart));
-        }
-    }, [cart]);
 
     // Update quantity of an item in cart
     const updateQuantity = (id: number, newQuantity: number) => {
         if (isNaN(newQuantity) || newQuantity < 1) return;
-        setCart((prevCart) =>
-            prevCart.map((item) =>
-                item.id === id ? { ...item, quantity: newQuantity } : item
-            )
-        );
+        dispatch({ type: actions.UPDATE_QUANTITY, payload: { id, quantity: newQuantity } });
     };
 
     // Remove item from cart
     const removeFromCart = (id: number) => {
-        setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+        dispatch({ type: actions.REMOVE_FROM_CART, payload: { id } });
     };
 
     // Calculate totals
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const deliveryFee = 2;
     const total = subtotal + deliveryFee;
 
@@ -55,7 +40,7 @@ const CartPage: React.FC = () => {
         <div className="cart-page">
             <h2 className="cart-title">Giỏ hàng</h2>
 
-            {cart.length === 0 ? (
+            {state.cart.length === 0 ? (
                 <p>Giỏ hàng của bạn đang trống.</p>
             ) : (
                 <>
@@ -71,7 +56,7 @@ const CartPage: React.FC = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {cart.map((item) => (
+                        {state.cart.map((item) => (
                             <tr key={item.id}>
                                 <td>
                                     <img

@@ -1,7 +1,6 @@
 // AppContext.tsx
 import React, {createContext, useReducer, useEffect, useContext} from 'react';
 
-// Định nghĩa kiểu dữ liệu
 interface CartItem {
     id: number;
     name: string;
@@ -10,9 +9,12 @@ interface CartItem {
 }
 
 interface User {
-    username: string;
+    id: string;
+    name: string;
     email: string;
-    avatar?: string;
+    address: string;
+    phone: string;
+    role: string;
 }
 
 interface AppState {
@@ -25,23 +27,25 @@ interface AppContextType {
     dispatch: React.Dispatch<any>;
 }
 
-// Khởi tạo trạng thái ban đầu
 const initialState: AppState = {
     cart: [],
     user: null,
 };
 
-// Tạo context
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Định nghĩa các action types
 const actionTypes = {
     LOGIN: 'LOGIN',
     LOGOUT: 'LOGOUT',
     ADD_TO_CART: 'ADD_TO_CART',
+    UPDATE_QUANTITY: 'UPDATE_QUANTITY',
+    REMOVE_FROM_CART: 'REMOVE_FROM_CART',
 };
 
 // Reducer để xử lý các hành động
+// trả về 1 state mới
+// action : hành động chưa type và payload
+// ...state : giữ nguyên các thứ còn lại
 const appReducer = (state: AppState, action: any): AppState => {
     switch (action.type) {
         case actionTypes.LOGIN:
@@ -62,6 +66,18 @@ const appReducer = (state: AppState, action: any): AppState => {
                 ...state,
                 cart: [...state.cart, { ...action.payload, quantity: 1 }],
             };
+        case actionTypes.UPDATE_QUANTITY:
+            return {
+                ...state,
+                cart: state.cart.map((item) =>
+                    item.id === action.payload.id ? { ...item, quantity: action.payload.quantity } : item
+                ),
+            };
+        case actionTypes.REMOVE_FROM_CART:
+            return {
+                ...state,
+                cart: state.cart.filter((item) => item.id !== action.payload.id),
+            };
         default:
             return state;
     }
@@ -69,6 +85,12 @@ const appReducer = (state: AppState, action: any): AppState => {
 
 // Provider để bọc ứng dụng
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
+    //  useReducer(appReducer, initialState, initializerFunction)
+    //  appReducer: Hàm reducer để xử lý các action.
+    //  initialState: State ban đầu (chưa dùng vì có initializer function).
+    //  initializerFunction: Hàm khởi tạo state ban đầu từ localStorage.
+
     const [state, dispatch] = useReducer(appReducer, initialState, () => {
         const savedCart = localStorage.getItem('cart');
         const savedUser = localStorage.getItem('user');
@@ -84,6 +106,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }, [state.cart, state.user]);
 
     return (
+        //  AppContext.Provider cung cấp state và dispatch cho toàn bộ ứng dụng.
+        //  Các component con có thể dùng useContext(AppContext) để truy cập state hoặc gọi dispatch.
+        //  children: Các component con được bọc bởi AppProvider.
+
         <AppContext.Provider value={{ state, dispatch }}>
             {children}
         </AppContext.Provider>

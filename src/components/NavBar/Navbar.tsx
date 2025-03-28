@@ -34,16 +34,19 @@ const Navbar: React.FC = () => {
             </div>
             <ul className="nav-links">
                 <li>
-                    <Link to="/food?category=food">Thực phẩm</Link>
+                    <Link to="/food?category=main">Món chính</Link>
                 </li>
                 <li>
-                    <Link to="/food?category=alcohol">Rượu bia</Link>
+                    <Link to="/food?category=dessert">Tráng miệng</Link>
                 </li>
                 <li>
-                    <Link to="/food?category=flowers">Hoa</Link>
+                    <Link to="/food?category=fast_food">Đồ ăn nhanh</Link>
                 </li>
                 <li>
-                    <Link to="/food?category=medicine">Thuốc</Link>
+                    <Link to="/food?category=drinks">Đồ uống</Link>
+                </li>
+                <li>
+                    <Link to="/food?category=other">Khác</Link>
                 </li>
             </ul>
             <div className="nav-actions">
@@ -71,7 +74,7 @@ const Navbar: React.FC = () => {
                 {state.user ? (
                     <div className="avatar-container">
                         <img
-                            src={state.user.avatar || avatar_icon}
+                            src={avatar_icon}
                             alt="Avatar"
                             className="avatar"
                             onClick={() => setShowDropdown(!showDropdown)}

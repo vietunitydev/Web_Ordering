@@ -6,11 +6,11 @@ import {actions, useAppContext} from "../../components/AppContext/AppContext.tsx
 
 // Sample data for items with categories
 const itemData = Array.from({ length: 124 }, (_, index) => {
-    const categories = ['food', 'alcohol', 'flowers', 'medicine'];
+    const categories = ['main', 'dessert', 'fast_food', 'drinks', 'other'];
     const category = categories[index % categories.length];
     return {
         id: index + 1,
-        name: `${category === 'food' ? 'Pizza' : category === 'alcohol' ? 'Beer' : category === 'flowers' ? 'Rose' : 'Pill'} Mushroom Sauce`,
+        name: `${category === 'main' ? 'main' : category === 'dessert' ? 'dessert' : category === 'fast_food' ? 'fast_food' : category === 'drinks' ? 'drinks' : 'other'} Mushroom Sauce`,
         price: 6.15,
         category: category,
         image: burger,
@@ -28,21 +28,23 @@ const FoodPage: React.FC = () => {
     const category = searchParams.get('category') || 'food';
 
     const categoryTitleMap: { [key: string]: string } = {
-        food: 'Đồ Ăn',
-        alcohol: 'Rượu Bia',
-        flowers: 'Hoa',
-        medicine: 'Thuốc',
+        main: 'Món chính',
+        dessert: 'Tráng miệng',
+        fast_food: 'Đồ ăn nhanh',
+        drinks: 'Đồ uống',
+        other: 'Khác',
     };
 
     const categoryPlaceholderMap: { [key: string]: string } = {
-        food: 'Tìm kiếm đồ ăn...',
-        alcohol: 'Tìm kiếm rượu bia...',
-        flowers: 'Tìm kiếm hoa...',
-        medicine: 'Tìm kiếm thuốc...',
+        main: 'Tìm kiếm món chính...',
+        dessert: 'Tìm kiếm tráng miệng',
+        fast_food: 'Tìm kiếm đồ ăn nhanh',
+        drinks: 'Tìm kiếm đồ uống',
+        other: 'Tìm kiếm khác',
     };
 
-    const title = categoryTitleMap[category] || 'Đồ Ăn';
-    const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm đồ ăn...';
+    const title = categoryTitleMap[category] || 'Món chính';
+    const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm món chính...';
 
     // Add item to cart using dispatch
     const addToCart = (pizza: { id: number; name: string; price: number }) => {
