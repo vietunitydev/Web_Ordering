@@ -1,40 +1,25 @@
 // Navbar.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import cart_icon from '../../assets/cart_icon.svg';
 import grass_icon from '../../assets/grass_icon.png';
 import avatar_icon from '../../assets/avatar_icon.png';
 import './Navbar.css';
+import { useAppContext, getTotalItems, actions } from '../AppContext/AppContext.tsx';
 
 const Navbar: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-    const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const { state, dispatch } = useAppContext();
+    const totalItems = getTotalItems(state.cart);
 
-    // Check login state and cart on mount
-    useEffect(() => {
-        const user = localStorage.getItem('user');
-        if (user) {
-            setIsLoggedIn(true);
-        }
-
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            setCart(JSON.parse(savedCart));
-        }
-    }, []);
-
-    // Handle logout
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        setIsLoggedIn(false);
+        dispatch({ type: actions.LOGOUT });
         setShowDropdown(false);
         navigate('/home');
     };
 
-    // Handle search submission
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         navigate(`/food?search=${searchTerm}`);
@@ -43,7 +28,9 @@ const Navbar: React.FC = () => {
     return (
         <nav className="navbar">
             <div className="logo">
-                <Link to="/home"><p>EATNOW.</p></Link>
+                <Link to="/home">
+                    <p>EATNOW.</p>
+                </Link>
             </div>
             <ul className="nav-links">
                 <li>
@@ -73,18 +60,18 @@ const Navbar: React.FC = () => {
                             />
                         </form>
                     </div>
-                    <span className="separator">|</span> {/* Dấu gạch thẳng */}
+                    <span className="separator">|</span>
                     <div className="cart-icon">
                         <Link to="/cart">
                             <img src={cart_icon} alt="cart_icon" />
-                            <span className="cart-badge">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                            <span className="cart-badge">{totalItems}</span>
                         </Link>
                     </div>
                 </div>
-                {isLoggedIn ? (
+                {state.user ? (
                     <div className="avatar-container">
                         <img
-                            src={avatar_icon}
+                            src={state.user.avatar || avatar_icon}
                             alt="Avatar"
                             className="avatar"
                             onClick={() => setShowDropdown(!showDropdown)}
@@ -95,7 +82,7 @@ const Navbar: React.FC = () => {
                                     Sửa đổi thông tin cá nhân
                                 </Link>
                                 <Link to="/order-history" onClick={() => setShowDropdown(false)}>
-                                    Xem lịch sửa đặt hàng
+                                    Xem lịch sử đặt hàng
                                 </Link>
                                 <button onClick={handleLogout}>Đăng xuất</button>
                             </div>

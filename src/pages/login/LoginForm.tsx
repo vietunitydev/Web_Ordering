@@ -1,8 +1,8 @@
-// LoginForm.tsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './LoginForm.css';
+import {actions, useAppContext} from "../../components/AppContext/AppContext.tsx";
 
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -10,6 +10,7 @@ const LoginForm: React.FC = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { dispatch } = useAppContext();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,13 +27,15 @@ const LoginForm: React.FC = () => {
             // Call the login API
             const response = await axios.post('http://localhost:4999/api/auth/login', {
                 email,
-                password
+                password,
             });
 
             if (response.data.success) {
-                // Store token and user info in local storage
+                // Dispatch action LOGIN để cập nhật trạng thái người dùng trong context
+                dispatch({ type: actions.LOGIN, payload: response.data.user });
+
+                // Store token in local storage (nếu cần cho các request API sau này)
                 localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
 
                 // Redirect to home page
                 navigate('/home');

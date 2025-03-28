@@ -13,29 +13,32 @@ import OrderHistoryPage from "./pages/OderHistoryPage/OrderHistoryPage.tsx";
 import AddItemPage from "./pages/admin/AddItemPage.tsx";
 import ListItemsPage from "./pages/admin/ListItemPage.tsx";
 import AdminOrdersPage from "./pages/admin/AdminOrderPage.tsx";
+import {AppProvider} from "./components/AppContext/AppContext.tsx";
 
 
 const App: React.FC = () => {
     return (
         <Router>
-            <Routes>
-                <Route element={<Layout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/home" element={<Home/>} />
-                    <Route path="/food" element={<FoodPage />} />
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/checkout" element={<CheckoutPage/>} />
-                    <Route path="/order-history" element={<OrderHistoryPage />} />
-                    <Route path="/login" element={<LoginForm />} />
-                    <Route path="/register" element={<RegisterForm />} />
-                </Route>
+            <AppProvider>
+                <Routes>
+                    <Route element={<Layout />}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/home" element={<Home/>} />
+                        <Route path="/food" element={<FoodPage />} />
+                        <Route path="/cart" element={<CartPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/checkout" element={<CheckoutPage/>} />
+                        <Route path="/order-history" element={<OrderHistoryPage />} />
+                        <Route path="/login" element={<LoginForm />} />
+                        <Route path="/register" element={<RegisterForm />} />
+                    </Route>
 
-                <Route path="/admin" element={<AddItemPage />} />
-                <Route path="/admin/add-item" element={<AddItemPage />} />
-                <Route path="/admin/list-items" element={<ListItemsPage />} />
-                <Route path="/admin/orders" element={<AdminOrdersPage />} />
-            </Routes>
+                    <Route path="/admin" element={<AddItemPage />} />
+                    <Route path="/admin/add-item" element={<AddItemPage />} />
+                    <Route path="/admin/list-items" element={<ListItemsPage />} />
+                    <Route path="/admin/orders" element={<AdminOrdersPage />} />
+                </Routes>
+            </AppProvider>
         </Router>
     );
 };

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import './FoodPage.css';
-import { useSearchParams } from "react-router-dom";
 import burger from '../../assets/burger1.png';
+import {actions, useAppContext} from "../../components/AppContext/AppContext.tsx";
 
 // Sample data for items with categories
 const itemData = Array.from({ length: 124 }, (_, index) => {
@@ -21,12 +22,8 @@ const ITEMS_PER_PAGE = 20;
 const FoodPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>(() => {
-        // Khởi tạo cart từ localStorage ngay khi component mount
-        const savedCart = localStorage.getItem('cart');
-        return savedCart ? JSON.parse(savedCart) : [];
-    });
     const [searchParams] = useSearchParams();
+    const { dispatch } = useAppContext();
 
     const category = searchParams.get('category') || 'food';
 
@@ -47,35 +44,15 @@ const FoodPage: React.FC = () => {
     const title = categoryTitleMap[category] || 'Đồ Ăn';
     const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm đồ ăn...';
 
-    // Save cart to localStorage whenever it changes
-    useEffect(() => {
-        // Chỉ lưu khi cart có dữ liệu
-        if (cart.length > 0) {
-            const savedCart = JSON.stringify(cart);
-            localStorage.setItem('cart', savedCart);
-            console.log('Saved cart to localStorage:', JSON.parse(savedCart));
-        }
-    }, [cart]);
-
-    // Add item to cart
+    // Add item to cart using dispatch
     const addToCart = (pizza: { id: number; name: string; price: number }) => {
-        setCart((prevCart) => {
-            const existingItem = prevCart.find((item) => item.id === pizza.id);
-            if (existingItem) {
-                return prevCart.map((item) =>
-                    item.id === pizza.id ? { ...item, quantity: item.quantity + 1 } : item
-                );
-            }
-            return [...prevCart, { ...pizza, quantity: 1 }];
-        });
+        dispatch({ type: actions.ADD_TO_CART, payload: pizza });
     };
 
     // Filter items based on category and search term
     const filteredItems = itemData
         .filter((item) => item.category === category)
-        .filter((item) =>
-            item.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
     // Calculate pagination
     const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
@@ -89,7 +66,7 @@ const FoodPage: React.FC = () => {
         }
     };
 
-    // Reset current page when category changes
+    // Reset current page when category or search term changes
     useEffect(() => {
         setCurrentPage(1);
     }, [category, searchTerm]);
@@ -129,7 +106,7 @@ const FoodPage: React.FC = () => {
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                 >
-                    &lt;
+                    {'<'}
                 </button>
                 {Array.from({ length: totalPages }, (_, index) => (
                     <button
@@ -144,7 +121,7 @@ const FoodPage: React.FC = () => {
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                 >
-                    &gt;
+                    {'>'}
                 </button>
             </div>
         </div>
