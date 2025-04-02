@@ -14,6 +14,7 @@ import AddItemPage from "./pages/admin/AddItemPage.tsx";
 import ListItemsPage from "./pages/admin/ListItemPage.tsx";
 import AdminOrdersPage from "./pages/admin/AdminOrderPage.tsx";
 import {AppProvider} from "./components/AppContext/AppContext.tsx";
+import AdminUsersPage from "./pages/admin/AdminUsersPage.tsx";
 
 
 const App: React.FC = () => {
@@ -37,6 +38,7 @@ const App: React.FC = () => {
                     <Route path="/admin/add-item" element={<AddItemPage />} />
                     <Route path="/admin/list-items" element={<ListItemsPage />} />
                     <Route path="/admin/orders" element={<AdminOrdersPage />} />
+                    <Route path="/admin/users" element={<AdminUsersPage />} />
                 </Routes>
             </AppProvider>
         </Router>

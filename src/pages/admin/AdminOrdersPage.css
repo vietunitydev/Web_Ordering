@@ -1,18 +1,4 @@
 .admin-orders-page {
-    max-width: 100%;
-}
-
-.admin-orders-page h2 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.no-orders {
-    font-size: 16px;
-    color: #666;
-    text-align: center;
     padding: 20px;
 }
 
@@ -23,26 +9,52 @@
 
 .orders-table th,
 .orders-table td {
-    padding: 12px;
+    padding: 10px;
+    border: 1px solid #ddd;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
 }
 
-.orders-table th {
-    background-color: #f1f1f1;
-    font-weight: 600;
-    color: #333;
-}
-
-.orders-table td {
-    color: #666;
-}
-
-.orders-table select {
-    padding: 5px;
-    border: 1px solid #ccc;
+.details-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
     border-radius: 5px;
-    font-size: 14px;
+    cursor: pointer;
+}
+
+.details-btn:hover {
+    background-color: #0056b3;
+}
+
+.order-details-row td {
+    padding: 0;
+}
+
+.order-details {
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.order-items-table th,
+.order-items-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.delivery-info {
+    margin-top: 15px;
+}
+
+.no-orders {
+    text-align: center;
+    color: #666;
 }
 
 /* Responsive Design */
