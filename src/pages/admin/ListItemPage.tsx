@@ -1,31 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
+import axios from 'axios';
 import './ListItemsPage.css';
 
 interface Item {
-    id: number;
-    name: string;
+    _id: string;
+    title: string;
     description: string;
-    category: string;
+    imageURL: string;
     price: number;
-    image: string | null;
+    type: string;
 }
 
 const ListItemsPage: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
 
     useEffect(() => {
-        const storedItems = localStorage.getItem('items');
-        if (storedItems) {
-            setItems(JSON.parse(storedItems));
-        }
+        const fetchItems = async () => {
+            try {
+                const response = await axios.get('http://localhost:4999/api/foodItems');
+                setItems(response.data);
+            } catch (error) {
+                console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+            }
+        };
+        fetchItems();
     }, []);
 
-    const handleDelete = (id: number) => {
+    const handleDelete = async (id: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-            const updatedItems = items.filter((item) => item.id !== id);
-            setItems(updatedItems);
-            localStorage.setItem('items', JSON.stringify(updatedItems));
+            try {
+                await axios.delete(`http://localhost:4999/api/foodItems/${id}`);
+                setItems((prevItems) => prevItems.filter((item) => item._id !== id));
+                alert('Sản phẩm đã được xóa!');
+            } catch (error) {
+                console.error('Lỗi khi xóa sản phẩm:', error);
+                alert('Lỗi khi xóa sản phẩm!');
+            }
         }
     };
 
@@ -49,22 +60,22 @@ const ListItemsPage: React.FC = () => {
                         </thead>
                         <tbody>
                         {items.map((item) => (
-                            <tr key={item.id}>
+                            <tr key={item._id}>
                                 <td>
-                                    {item.image ? (
-                                        <img src={item.image} alt={item.name} className="item-image" />
+                                    {item.imageURL ? (
+                                        <img src={`http://localhost:4999${item.imageURL}`} alt={item.title} className="item-image" />
                                     ) : (
                                         'No Image'
                                     )}
                                 </td>
-                                <td>{item.name}</td>
+                                <td>{item.title}</td>
                                 <td>{item.description}</td>
-                                <td>{item.category}</td>
+                                <td>{item.type}</td>
                                 <td>${item.price.toFixed(2)}</td>
                                 <td>
                                     <button
                                         className="delete-btn"
-                                        onClick={() => handleDelete(item.id)}
+                                        onClick={() => handleDelete(item._id)}
                                     >
                                         Delete
                                     </button>

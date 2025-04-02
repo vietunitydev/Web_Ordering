@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import AdminLayout from './AdminLayout';
+import axios from 'axios';
 import './AddItemPage.css';
 import upload from '../../assets/upload.png';
 
 const AddItemPage: React.FC = () => {
     const [formData, setFormData] = useState({
-        name: '',
+        title: '',
         description: '',
-        category: '',
+        type: '',
         price: '',
         image: null as File | null,
     });
@@ -33,28 +34,37 @@ const AddItemPage: React.FC = () => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.name || !formData.description || !formData.category || !formData.price) {
+        if (!formData.title || !formData.description || !formData.type || !formData.price || !formData.image) {
             alert('Vui lòng nhập đầy đủ thông tin sản phẩm.');
             return;
         }
-        // Logic lưu sản phẩm vào localStorage (giữ nguyên như cũ)
-        const newItem = {
-            id: Date.now(),
-            name: formData.name,
+
+        const data = new FormData();
+        data.append('title', formData.title);
+        data.append('description', formData.description);
+        data.append('type', formData.type);
+        data.append('price', formData.price);
+        data.append('image', formData.image);
+
+        console.log('Dữ liệu gửi đi:', {
+            title: formData.title,
             description: formData.description,
-            category: formData.category,
-            price: parseFloat(formData.price),
-            image: formData.image ? URL.createObjectURL(formData.image) : null,
-        };
-        const items = localStorage.getItem('items');
-        const itemList = items ? JSON.parse(items) : [];
-        itemList.push(newItem);
-        localStorage.setItem('items', JSON.stringify(itemList));
-        alert('Sản phẩm đã được thêm thành công!');
-        setFormData({ name: '', description: '', category: '', price: '', image: null });
-        setImagePreview(null);
+            type: formData.type,
+            price: formData.price,
+            image: formData.image,
+        });
+
+        try {
+            await axios.post('http://localhost:4999/api/foodItems', data);
+            alert('Sản phẩm đã được thêm thành công!');
+            setFormData({ title: '', description: '', type: '', price: '', image: null });
+            setImagePreview(null);
+        } catch (error) {
+            alert('Lỗi khi thêm sản phẩm!');
+            console.error(error);
+        }
     };
 
     return (
@@ -83,12 +93,12 @@ const AddItemPage: React.FC = () => {
                         )}
                     </div>
                     <div className="form-group">
-                        <label htmlFor="name">Tên sản phẩm</label>
+                        <label htmlFor="title">Tên sản phẩm</label>
                         <input
                             type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
+                            id="title"
+                            name="title"
+                            value={formData.title}
                             onChange={handleInputChange}
                         />
                     </div>
@@ -103,11 +113,11 @@ const AddItemPage: React.FC = () => {
                     </div>
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="category">Danh mục sản phẩm</label>
+                            <label htmlFor="type">Danh mục sản phẩm</label>
                             <select
-                                id="category"
-                                name="category"
-                                value={formData.category}
+                                id="type"
+                                name="type"
+                                value={formData.type}
                                 onChange={handleInputChange}
                             >
                                 <option value="">Chọn danh mục</option>
