@@ -37,7 +37,6 @@ const FoodPage: React.FC = () => {
             try {
                 const response = await axios.get('http://localhost:4999/api/foodItems');
                 setItems(response.data);
-                console.log(response.data);
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách sản phẩm:', error);
             }
@@ -45,8 +44,31 @@ const FoodPage: React.FC = () => {
         fetchItems();
     }, []);
 
-    const addToCart = (item: { _id: string; title: string; price: number }) => {
-        dispatch({ type: actions.ADD_TO_CART, payload: { id: item._id, name: item.title, price: item.price } });
+    const addToCart = async (item: { _id: string; title: string; price: number }) => {
+        try {
+            // nếu lưu token ở cookie thì sẽ có thể tự động gửi tới server trong mỗi request, còn
+            // nếu lưu trong local Storage thì phải thêm header vào trong mỗi request
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                'http://localhost:4999/api/carts/add',
+                { foodItemId: item._id, quantity: 1 },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+
+            );
+            // Cập nhật AppContext để đồng bộ giao diện
+            dispatch({
+                type: actions.ADD_TO_CART,
+                payload: { id: item._id, name: item.title, price: item.price }
+            });
+            console.log('Thêm vào giỏ hàng thành công:', response.data);
+        } catch (error) {
+            console.error('Lỗi khi thêm vào giỏ hàng:', error);
+            alert('Vui lòng đăng nhập để thêm vào giỏ hàng!');
+        }
     };
 
     const filteredItems = items.filter((item) => item.type === category);
