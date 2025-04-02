@@ -120,10 +120,12 @@ const AddItemPage: React.FC = () => {
                                 value={formData.type}
                                 onChange={handleInputChange}
                             >
-                                <option value="">Chọn danh mục</option>
-                                <option value="Main">Món chính</option>
-                                <option value="Dessert">Tráng miệng</option>
-                                <option value="Drink">Đồ uống</option>
+                                {/*<option value="">Chọn danh mục</option>*/}
+                                <option value="main">Món chính</option>
+                                <option value="dessert">Tráng miệng</option>
+                                <option value="fast_food">Đồ ăn nhanh</option>
+                                <option value="drinks">Đồ uống</option>
+                                <option value="other">Khác</option>
                             </select>
                         </div>
                         <div className="form-group">

@@ -1,31 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useAppContext, actions } from '../../components/AppContext/AppContext.tsx';
+import axios from 'axios';
 import './FoodPage.css';
-import burger from '../../assets/burger1.png';
-import {actions, useAppContext} from "../../components/AppContext/AppContext.tsx";
 
-// Sample data for items with categories
-const itemData = Array.from({ length: 124 }, (_, index) => {
-    const categories = ['main', 'dessert', 'fast_food', 'drinks', 'other'];
-    const category = categories[index % categories.length];
-    return {
-        id: index + 1,
-        name: `${category === 'main' ? 'main' : category === 'dessert' ? 'dessert' : category === 'fast_food' ? 'fast_food' : category === 'drinks' ? 'drinks' : 'other'} Mushroom Sauce`,
-        price: 6.15,
-        category: category,
-        image: burger,
-    };
-});
+interface Item {
+    _id: string;
+    title: string;
+    price: number;
+    type: string;
+    imageURL: string;
+}
 
 const ITEMS_PER_PAGE = 20;
 
 const FoodPage: React.FC = () => {
-    // const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [items, setItems] = useState<Item[]>([]);
     const [searchParams] = useSearchParams();
     const { dispatch } = useAppContext();
 
-    const category = searchParams.get('category') || 'food';
+    const category = searchParams.get('category') || 'main';
 
     const categoryTitleMap: { [key: string]: string } = {
         main: 'Món chính',
@@ -35,40 +30,37 @@ const FoodPage: React.FC = () => {
         other: 'Khác',
     };
 
-    // const categoryPlaceholderMap: { [key: string]: string } = {
-    //     main: 'Tìm kiếm món chính...',
-    //     dessert: 'Tìm kiếm tráng miệng',
-    //     fast_food: 'Tìm kiếm đồ ăn nhanh',
-    //     drinks: 'Tìm kiếm đồ uống',
-    //     other: 'Tìm kiếm khác',
-    // };
-
     const title = categoryTitleMap[category] || 'Món chính';
-    // const placeholder = categoryPlaceholderMap[category] || 'Tìm kiếm món chính...';
 
-    // Add item to cart using dispatch
-    const addToCart = (pizza: { id: number; name: string; price: number }) => {
-        dispatch({ type: actions.ADD_TO_CART, payload: pizza });
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await axios.get('http://localhost:4999/api/foodItems');
+                setItems(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+            }
+        };
+        fetchItems();
+    }, []);
+
+    const addToCart = (item: { _id: string; title: string; price: number }) => {
+        dispatch({ type: actions.ADD_TO_CART, payload: { id: item._id, name: item.title, price: item.price } });
     };
 
-    // Filter items based on category and search term
-    const filteredItems = itemData
-        .filter((item) => item.category === category);
-        // .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredItems = items.filter((item) => item.type === category);
 
-    // Calculate pagination
     const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const currentItems = filteredItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-    // Handle page change
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
             setCurrentPage(page);
         }
     };
 
-    // Reset current page when category or search term changes
     useEffect(() => {
         setCurrentPage(1);
     }, [category]);
@@ -77,24 +69,14 @@ const FoodPage: React.FC = () => {
         <div className="food-page">
             <div className="food-header">
                 <h2 className="food-title">{title}</h2>
-                {/*<input*/}
-                {/*    type="text"*/}
-                {/*    placeholder={placeholder}*/}
-                {/*    className="search-bar"*/}
-                {/*    value={searchTerm}*/}
-                {/*    onChange={(e) => {*/}
-                {/*        setSearchTerm(e.target.value);*/}
-                {/*        setCurrentPage(1);*/}
-                {/*    }}*/}
-                {/*/>*/}
                 <p className="result-count">{filteredItems.length} kết quả</p>
             </div>
 
             <div className="pizza-grid">
                 {currentItems.map((item) => (
-                    <div key={item.id} className="pizza-card">
-                        <img src={item.image} alt={item.name} className="pizza-image" />
-                        <h3 className="pizza-name">{item.name}</h3>
+                    <div key={item._id} className="pizza-card">
+                        <img src={`http://localhost:4999${item.imageURL}`} alt={item.title} className="pizza-image" />
+                        <h3 className="pizza-name">{item.title}</h3>
                         <p className="pizza-price">${item.price.toFixed(2)}</p>
                         <button onClick={() => addToCart(item)} className="add-to-cart-button">
                             Thêm vào giỏ hàng
