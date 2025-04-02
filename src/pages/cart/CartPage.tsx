@@ -1,37 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext, actions } from '../../components/AppContext/AppContext.tsx';
+import axios from 'axios';
 import './CartPage.css';
-import burger from '../../assets/burger1.png';
-import {actions, useAppContext} from "../../components/AppContext/AppContext.tsx";
+import { ContextCartItem } from "../../shared/types.ts";
 
 const CartPage: React.FC = () => {
     const { state, dispatch } = useAppContext();
     const [promoCode, setPromoCode] = useState('');
     const navigate = useNavigate();
 
-    // Update quantity of an item in cart
-    const updateQuantity = (id: number, newQuantity: number) => {
+    useEffect(() => {
+        const fetchCart = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:4999/api/carts/my-cart', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const cartItems = response.data.list.map((item: any) => ({
+                    id: item.foodItemId._id,
+                    name: item.foodItemId.title,
+                    price: item.foodItemId.price,
+                    quantity: item.quantity,
+                    imageURL: item.foodItemId.imageURL,
+                }));
+                dispatch({ type: actions.SET_CART, payload: cartItems });
+            } catch (error) {
+                console.error('Lỗi khi lấy giỏ hàng:', error);
+            }
+        };
+        if (state.user) fetchCart();
+    }, [dispatch, state.user]);
+
+    const updateQuantityLocally = (id: string, newQuantity: number) => {
         if (isNaN(newQuantity) || newQuantity < 1) return;
         dispatch({ type: actions.UPDATE_QUANTITY, payload: { id, quantity: newQuantity } });
     };
 
-    // Remove item from cart
-    const removeFromCart = (id: number) => {
+    const removeFromCartLocally = (id: string) => {
         dispatch({ type: actions.REMOVE_FROM_CART, payload: { id } });
     };
 
-    // Calculate totals
+    const updateCartOnServer = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            for (const item of state.cart) {
+                await axios.put(
+                    'http://localhost:4999/api/carts/update',
+                    { foodItemId: item.id, quantity: item.quantity },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+            }
+            alert('Giỏ hàng đã được cập nhật trên server!');
+        } catch (error) {
+            console.error('Lỗi khi cập nhật giỏ hàng:', error);
+            alert('Lỗi khi cập nhật giỏ hàng!');
+        }
+    };
+
     const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const deliveryFee = 2;
     const total = subtotal + deliveryFee;
 
-    // Handle promo code (placeholder functionality)
     const handlePromoSubmit = () => {
         alert(`Promo code "${promoCode}" applied (placeholder)`);
         setPromoCode('');
     };
 
-    // Handle checkout
     const handleCheckout = () => {
         navigate('/checkout');
     };
@@ -44,51 +79,59 @@ const CartPage: React.FC = () => {
                 <p>Giỏ hàng của bạn đang trống.</p>
             ) : (
                 <>
-                    <table className="cart-table">
-                        <thead>
-                        <tr>
-                            <th>Items</th>
-                            <th>Title</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Remove</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {state.cart.map((item) => (
-                            <tr key={item.id}>
-                                <td>
-                                    <img
-                                        src={burger}
-                                        alt={item.name}
-                                        className="cart-item-image"
-                                    />
-                                </td>
-                                <td>{item.name}</td>
-                                <td>${item.price.toFixed(2)}</td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        value={item.quantity}
-                                        onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
-                                        min="1"
-                                        className="quantity-input"
-                                    />
-                                </td>
-                                <td>${(item.price * item.quantity).toFixed(2)}</td>
-                                <td>
-                                    <button
-                                        onClick={() => removeFromCart(item.id)}
-                                        className="remove-button"
-                                    >
-                                        ✕
-                                    </button>
-                                </td>
+                    <div className="cart-content">
+                        <table className="cart-table">
+                            <thead>
+                            <tr>
+                                <th>Items</th>
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Remove</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {state.cart.map((item: ContextCartItem) => (
+                                <tr key={item.id}>
+                                    <td>
+                                        <img
+                                            src={`http://localhost:4999${item.imageURL}`}
+                                            alt={item.name}
+                                            className="cart-item-image"
+                                        />
+                                    </td>
+                                    <td>{item.name}</td>
+                                    <td>${item.price.toFixed(2)}</td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            value={item.quantity}
+                                            onChange={(e) => updateQuantityLocally(item.id, parseInt(e.target.value))}
+                                            min="1"
+                                            className="quantity-input"
+                                        />
+                                    </td>
+                                    <td>${(item.price * item.quantity).toFixed(2)}</td>
+                                    <td>
+                                        <button
+                                            onClick={() => removeFromCartLocally(item.id)}
+                                            className="remove-button"
+                                        >
+                                            ✕
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+
+                        <div className="update-cart-container">
+                            <button onClick={updateCartOnServer} className="update-cart-button">
+                                Update Cart
+                            </button>
+                        </div>
+                    </div>
 
                     <div className="cart-summary">
                         <div className="summary-left">

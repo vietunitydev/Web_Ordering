@@ -1,24 +1,8 @@
-// AppContext.tsx
-import React, {createContext, useReducer, useEffect, useContext} from 'react';
-
-interface CartItem {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-}
-
-interface User {
-    id: string;
-    name: string;
-    email: string;
-    address: string;
-    phone: string;
-    role: string;
-}
+import React, { createContext, useReducer, useEffect, useContext } from 'react';
+import { ContextCartItem, User } from '../../shared/types';
 
 interface AppState {
-    cart: CartItem[];
+    cart: ContextCartItem[];
     user: User | null;
 }
 
@@ -34,24 +18,22 @@ const initialState: AppState = {
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const actionTypes = {
+export const actionTypes = {
     LOGIN: 'LOGIN',
     LOGOUT: 'LOGOUT',
     ADD_TO_CART: 'ADD_TO_CART',
+    SET_CART: 'SET_CART',
     UPDATE_QUANTITY: 'UPDATE_QUANTITY',
     REMOVE_FROM_CART: 'REMOVE_FROM_CART',
+    CLEAR_CART: 'CLEAR_CART',
 };
 
-// Reducer để xử lý các hành động
-// trả về 1 state mới
-// action : hành động chưa type và payload
-// ...state : giữ nguyên các thứ còn lại
 const appReducer = (state: AppState, action: any): AppState => {
     switch (action.type) {
         case actionTypes.LOGIN:
             return { ...state, user: action.payload };
         case actionTypes.LOGOUT:
-            return { ...state, user: null };
+            return { ...state, user: null, cart: [] };
         case actionTypes.ADD_TO_CART:
             const existingItem = state.cart.find((item) => item.id === action.payload.id);
             if (existingItem) {
@@ -66,6 +48,8 @@ const appReducer = (state: AppState, action: any): AppState => {
                 ...state,
                 cart: [...state.cart, { ...action.payload, quantity: 1 }],
             };
+        case actionTypes.SET_CART:
+            return { ...state, cart: action.payload };
         case actionTypes.UPDATE_QUANTITY:
             return {
                 ...state,
@@ -78,6 +62,8 @@ const appReducer = (state: AppState, action: any): AppState => {
                 ...state,
                 cart: state.cart.filter((item) => item.id !== action.payload.id),
             };
+        case actionTypes.CLEAR_CART:
+            return { ...state, cart: [] };
         default:
             return state;
     }
@@ -92,18 +78,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     //  initializerFunction: Hàm khởi tạo state ban đầu từ localStorage.
 
     const [state, dispatch] = useReducer(appReducer, initialState, () => {
-        const savedCart = localStorage.getItem('cart');
         const savedUser = localStorage.getItem('user');
         return {
-            cart: savedCart ? JSON.parse(savedCart) : [],
+            cart: [],
             user: savedUser ? JSON.parse(savedUser) : null,
         };
     });
 
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(state.cart));
         localStorage.setItem('user', JSON.stringify(state.user));
-    }, [state.cart, state.user]);
+    }, [state.user]);
 
     return (
         //  AppContext.Provider cung cấp state và dispatch cho toàn bộ ứng dụng.
@@ -124,7 +108,7 @@ export const useAppContext = () => {
     return context;
 };
 
-export const getTotalItems = (cart: CartItem[]) => {
+export const getTotalItems = (cart: ContextCartItem[]) => {
     return cart.reduce((total, item) => total + item.quantity, 0);
 };
 

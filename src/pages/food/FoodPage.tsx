@@ -1,24 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useAppContext, actions } from '../../components/AppContext/AppContext.tsx';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useAppContext, actions} from '../../components/AppContext/AppContext.tsx';
 import axios from 'axios';
 import './FoodPage.css';
-
-interface Item {
-    _id: string;
-    title: string;
-    price: number;
-    type: string;
-    imageURL: string;
-}
+import {FoodItem} from "../../shared/types.ts";
 
 const ITEMS_PER_PAGE = 20;
 
 const FoodPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [items, setItems] = useState<Item[]>([]);
+    const [items, setItems] = useState<FoodItem[]>([]);
     const [searchParams] = useSearchParams();
-    const { dispatch } = useAppContext();
+    const { state, dispatch } = useAppContext();
+    const navigate = useNavigate();
 
     const category = searchParams.get('category') || 'main';
 
@@ -44,22 +38,20 @@ const FoodPage: React.FC = () => {
         fetchItems();
     }, []);
 
-    const addToCart = async (item: { _id: string; title: string; price: number }) => {
+    const addToCart = async (item: FoodItem) => {
+        if (!state.user) {
+            alert('Vui lòng đăng nhập để thêm vào giỏ hàng!');
+            navigate('/login');
+            return;
+        }
+
         try {
-            // nếu lưu token ở cookie thì sẽ có thể tự động gửi tới server trong mỗi request, còn
-            // nếu lưu trong local Storage thì phải thêm header vào trong mỗi request
             const token = localStorage.getItem('token');
             const response = await axios.post(
                 'http://localhost:4999/api/carts/add',
                 { foodItemId: item._id, quantity: 1 },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-
+                { headers: { Authorization: `Bearer ${token}` } }
             );
-            // Cập nhật AppContext để đồng bộ giao diện
             dispatch({
                 type: actions.ADD_TO_CART,
                 payload: { id: item._id, name: item.title, price: item.price }
@@ -67,7 +59,7 @@ const FoodPage: React.FC = () => {
             console.log('Thêm vào giỏ hàng thành công:', response.data);
         } catch (error) {
             console.error('Lỗi khi thêm vào giỏ hàng:', error);
-            alert('Vui lòng đăng nhập để thêm vào giỏ hàng!');
+            alert('Lỗi khi thêm vào giỏ hàng!');
         }
     };
 
