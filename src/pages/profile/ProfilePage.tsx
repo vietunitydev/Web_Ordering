@@ -10,8 +10,13 @@ const ProfilePage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const [loading, setLoading] = useState(true);
+    const [showPasswordForm, setShowPasswordForm] = useState(false); // State để hiển thị form đổi mật khẩu
     const navigate = useNavigate();
 
     // Load user data from server on mount
@@ -34,9 +39,7 @@ const ProfilePage: React.FC = () => {
                 setEmail(fetchedUser.email || '');
                 setPhone(fetchedUser.phone || '');
                 setAddress(fetchedUser.address || '');
-
-                // Đồng bộ với localStorage (tùy chọn)
-                // localStorage.setItem('user', JSON.stringify(fetchedUser));
+                localStorage.setItem('user', JSON.stringify(fetchedUser));
             } catch (err) {
                 console.error('Error fetching user data:', err);
                 setError('Không thể tải thông tin người dùng. Vui lòng đăng nhập lại.');
@@ -49,7 +52,7 @@ const ProfilePage: React.FC = () => {
         fetchUserData();
     }, [navigate]);
 
-    // Handle form submission (save changes to server)
+    // Handle form submission (save profile changes)
     const handleSaveChanges = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -86,7 +89,6 @@ const ProfilePage: React.FC = () => {
                 }
             );
 
-            // Cập nhật state và localStorage
             setUser(updatedUser);
             localStorage.setItem('user', JSON.stringify(updatedUser));
             setError('');
@@ -94,6 +96,55 @@ const ProfilePage: React.FC = () => {
         } catch (err) {
             console.error('Error updating user:', err);
             setError('Không thể cập nhật thông tin. Vui lòng thử lại.');
+        }
+    };
+
+    // Handle password change
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            setPasswordError('Vui lòng nhập đầy đủ mật khẩu hiện tại, mật khẩu mới và xác nhận mật khẩu.');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setPasswordError('Mật khẩu mới và xác nhận mật khẩu không khớp.');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setPasswordError('Mật khẩu mới phải có ít nhất 6 ký tự.');
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                navigate('/login');
+                return;
+            }
+
+            await axios.put(
+                'http://localhost:4999/api/users/change-password',
+                {
+                    currentPassword,
+                    newPassword,
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setPasswordError('');
+            setShowPasswordForm(false); // Ẩn form sau khi đổi thành công
+            alert('Mật khẩu đã được thay đổi thành công!');
+        } catch (err : any) {
+            console.error('Error changing password:', err);
+            setPasswordError(err.response?.data?.message || 'Không thể thay đổi mật khẩu. Vui lòng thử lại.');
         }
     };
 
@@ -107,12 +158,10 @@ const ProfilePage: React.FC = () => {
                     return;
                 }
 
-                // Gọi API để xóa tài khoản trên server (nếu có)
                 await axios.delete('http://localhost:4999/api/users/delete', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                // Xóa dữ liệu local
                 localStorage.removeItem('user');
                 localStorage.removeItem('cart');
                 localStorage.removeItem('token');
@@ -124,9 +173,13 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    // Handle change password (placeholder)
-    const handleChangePassword = () => {
-        alert('Chức năng đổi mật khẩu đang được phát triển.');
+    // Toggle password form visibility
+    const togglePasswordForm = () => {
+        setShowPasswordForm(!showPasswordForm);
+        setPasswordError(''); // Reset lỗi khi mở/đóng form
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
     };
 
     if (loading) {
@@ -146,6 +199,8 @@ const ProfilePage: React.FC = () => {
                         Xóa tài khoản
                     </button>
                 </div>
+
+                {/* Form thay đổi thông tin cá nhân */}
                 <h3>Thay đổi thông tin</h3>
                 {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleSaveChanges}>
@@ -188,7 +243,7 @@ const ProfilePage: React.FC = () => {
                             <button
                                 type="button"
                                 className="change-password-link"
-                                onClick={handleChangePassword}
+                                onClick={togglePasswordForm}
                             >
                                 Đổi mật khẩu
                             </button>
@@ -198,6 +253,50 @@ const ProfilePage: React.FC = () => {
                         Lưu thay đổi
                     </button>
                 </form>
+
+                {/* Form đổi mật khẩu (hiển thị khi nhấn nút) */}
+                {showPasswordForm && (
+                    <div className="password-form">
+                        <h3>Đổi mật khẩu</h3>
+                        {passwordError && <p className="error-message">{passwordError}</p>}
+                        <form onSubmit={handleChangePassword}>
+                            <div className="form-group">
+                                <label>Mật khẩu hiện tại</label>
+                                <input
+                                    type="password"
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Mật khẩu mới</label>
+                                <input
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Xác nhận mật khẩu mới</label>
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                />
+                            </div>
+                            <button type="submit" className="save-btn">
+                                Xác nhận đổi mật khẩu
+                            </button>
+                            <button
+                                type="button"
+                                className="cancel-btn"
+                                onClick={togglePasswordForm}
+                            >
+                                Hủy
+                            </button>
+                        </form>
+                    </div>
+                )}
             </div>
         </div>
     );
