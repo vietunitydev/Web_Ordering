@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Đảm bảo đã cài đặt axios
 import './CheckoutPage.css';
 
 const CheckoutPage: React.FC = () => {
-    const [cart, setCart] = useState<{ id: number; name: string; price: number; quantity: number }[]>(() => {
-        const savedCart = localStorage.getItem('cart');
-        return savedCart ? JSON.parse(savedCart) : [];
-    });
+    const [cart, setCart] = useState<{ id: string; name: string; price: number; quantity: number }[]>([]);
     const [formData, setFormData] = useState({
         firstName: '',
         email: '',
@@ -15,19 +13,50 @@ const CheckoutPage: React.FC = () => {
     });
     const navigate = useNavigate();
 
-    // Lấy thông tin người dùng từ localStorage khi component mount
+    // Lấy thông tin giỏ hàng và người dùng từ server hoặc localStorage khi component mount
     useEffect(() => {
-        const userInfo = localStorage.getItem('user');
-        if (userInfo) {
-            const user = JSON.parse(userInfo);
-            setFormData({
-                firstName: user.name || '',
-                email: user.email || '',
-                address: user.address || '',
-                phone: user.phone || '',
-            });
-        }
-    }, []); // Mảng rỗng đảm bảo useEffect chỉ chạy một lần khi component mount
+        const fetchCart = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Please log in to proceed.');
+                    navigate('/login');
+                    return;
+                }
+
+                // Lấy giỏ hàng từ server (giả sử bạn có endpoint /api/carts/my-cart)
+                const cartResponse = await axios.get('http://localhost:4999/api/carts/my-cart', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                const cartItems = cartResponse.data.list.map((item: any) => ({
+                    id: item.foodItemId._id,
+                    name: item.foodItemId.title,
+                    price: item.foodItemId.price,
+                    quantity: item.quantity,
+                }));
+
+                setCart(cartItems);
+
+                // Lấy thông tin người dùng từ localStorage hoặc server
+                const userInfo = localStorage.getItem('user');
+                if (userInfo) {
+                    const user = JSON.parse(userInfo);
+                    setFormData({
+                        firstName: user.name || '',
+                        email: user.email || '',
+                        address: user.address || '',
+                        phone: user.phone || '',
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching cart or user data:', error);
+                alert('Failed to load cart or user data. Please try again.');
+            }
+        };
+
+        fetchCart();
+    }, [navigate]);
 
     // Tính toán tổng giá trị
     const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -44,37 +73,61 @@ const CheckoutPage: React.FC = () => {
     };
 
     // Xử lý khi nhấn nút "Proceed to Payment"
-    const handleProceedToPayment = () => {
+    const handleProceedToPayment = async () => {
         if (!formData.firstName || !formData.email || !formData.address || !formData.phone) {
             alert('Please fill in all delivery information fields.');
             return;
         }
 
-        const order = {
-            id: Date.now(),
-            date: new Date().toLocaleString(),
-            items: cart,
-            subtotal: subtotal,
-            deliveryFee: deliveryFee,
-            total: total,
-            status: 'Đang xử lý',
-            deliveryInfo: formData,
-        };
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please log in to proceed.');
+                navigate('/login');
+                return;
+            }
 
-        // Lấy lịch sử đặt hàng từ localStorage
-        const orderHistory = localStorage.getItem('orderHistory');
-        const orders = orderHistory ? JSON.parse(orderHistory) : [];
+            console.log("start oder");
 
-        // Thêm đơn hàng mới vào lịch sử
-        orders.push(order);
-        localStorage.setItem('orderHistory', JSON.stringify(orders));
+            const orderData = {
+                userId: JSON.parse(localStorage.getItem('user') || '{}').id, // Lấy userId từ localStorage
+                name: formData.firstName,
+                address: formData.address,
+                email : formData.email,
+                phone: formData.phone,
+                shippingFee: deliveryFee,
+                totalAmount: subtotal + deliveryFee, // Tổng trước khi discount
+                payment: subtotal, // Giả sử không có discount, bạn có thể thêm logic discount sau
+                paymentMethod: 'cash', // Mặc định là cash, có thể thay đổi
+                discount: 0.0, // Mặc định không có discount, bạn có thể mở rộng
+                items: cart.map(item => ({
+                    foodItemId: item.id,
+                    quantity: item.quantity
+                }))
+            };
 
-        // Xóa giỏ hàng sau khi thanh toán
-        localStorage.removeItem('cart');
-        setCart([]);
+            console.log(orderData);
 
-        alert('Đặt hàng thành công! Bạn có thể xem lịch sử đặt hàng trong trang "Lịch sử đặt hàng".');
-        navigate('/');
+            // Gửi order lên server
+            const response = await axios.post('http://localhost:4999/api/orders/create', orderData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if(!response){
+                alert('Order placed successfully! You can view order history in the "Order History" page.');
+
+                // Xóa giỏ hàng trên server (nếu cần)
+                await axios.delete('http://localhost:4999/api/carts/clear', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                setCart([]); // Xóa giỏ hàng locally
+                navigate('/order-history'); // Chuyển đến trang lịch sử order
+            }
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Failed to place order. Please try again.');
+        }
     };
 
     return (

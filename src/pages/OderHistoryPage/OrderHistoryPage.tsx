@@ -1,46 +1,91 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './OrderHistoryPage.css';
 
+// Interface cho OrderItem từ server
 interface OrderItem {
-    id: number;
-    name: string;
-    price: number;
+    foodItemId: {
+        _id: string;
+        title: string;
+        price: number;
+    };
     quantity: number;
 }
 
+// Interface cho Order từ server
 interface Order {
-    id: number;
-    date: string;
+    _id: string; // Thay id bằng _id từ MongoDB
+    createdAt: string; // Thay date bằng createdAt
     items: OrderItem[];
-    subtotal: number;
-    deliveryFee: number;
-    total: number;
+    totalAmount: number; // Thay total bằng totalAmount
+    shippingFee: number; // Thay deliveryFee bằng shippingFee
     status: string;
-    deliveryInfo: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        address: string;
-        phone: string;
-    };
+    name: string; // Tên người nhận
+    address: string; // Địa chỉ giao hàng
+    phone?: string; // Tùy chọn, nếu có trong dữ liệu từ server
+    email?: string; // Tùy chọn
 }
 
 const OrderHistoryPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
-    const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+    const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const orderHistory = localStorage.getItem('orderHistory');
-        if (orderHistory) {
-            setOrders(JSON.parse(orderHistory));
-        }
-    }, []);
+        const fetchOrderHistory = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Please log in to view order history.');
+                    navigate('/login');
+                    return;
+                }
+
+                const response = await axios.get('http://localhost:4999/api/orders/history', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                const fetchedOrders: Order[] = response.data.orders;
+                setOrders(fetchedOrders);
+            } catch (err) {
+                if (axios.isAxiosError(err)) {
+                    setError(err.response?.data?.message || 'Failed to fetch order history.');
+                } else {
+                    setError('An unexpected error occurred.');
+                }
+                console.error('Error fetching order history:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchOrderHistory();
+    }, [navigate]);
 
     const handleBackToHome = () => {
         navigate('/');
     };
+
+    if (loading) {
+        return <div className="order-history-page">Loading...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="order-history-page">
+                <div className="order-history-container">
+                    <h2>Lịch sử đặt hàng</h2>
+                    <p className="error">{error}</p>
+                    <button className="back-btn" onClick={handleBackToHome}>
+                        Quay lại trang chủ
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="order-history-page">
@@ -56,21 +101,31 @@ const OrderHistoryPage: React.FC = () => {
                 ) : (
                     <div className="order-list">
                         {orders.map((order) => (
-                            <div key={order.id} className="order-item">
+                            <div key={order._id} className="order-item">
                                 <div className="order-header">
-                                    <h3>Đơn hàng #{order.id}</h3>
-                                    <span className={`status ${order.status === 'Đang xử lý' ? 'processing' : 'completed'}`}>
+                                    <h3>Đơn hàng #{order._id}</h3>
+                                    <span
+                                        className={`status ${
+                                            order.status === 'pending' ? 'processing' : 'completed'
+                                        }`}
+                                    >
                                         {order.status}
                                     </span>
                                     <button
                                         className="toggle-details-btn"
-                                        onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                                        onClick={() =>
+                                            setExpandedOrderId(
+                                                expandedOrderId === order._id ? null : order._id
+                                            )
+                                        }
                                     >
-                                        {expandedOrderId === order.id ? 'Ẩn chi tiết' : 'Xem chi tiết'}
+                                        {expandedOrderId === order._id ? 'Ẩn chi tiết' : 'Xem chi tiết'}
                                     </button>
                                 </div>
-                                <p className="order-date">Ngày đặt: {order.date}</p>
-                                {expandedOrderId === order.id && (
+                                <p className="order-date">
+                                    Ngày đặt: {new Date(order.createdAt).toLocaleString()}
+                                </p>
+                                {expandedOrderId === order._id && (
                                     <>
                                         <div className="order-details">
                                             <h4>Chi tiết đơn hàng</h4>
@@ -84,27 +139,31 @@ const OrderHistoryPage: React.FC = () => {
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {order.items.map((item) => (
-                                                    <tr key={item.id}>
-                                                        <td>{item.name}</td>
+                                                {order.items.map((item, index) => (
+                                                    <tr key={index}>
+                                                        <td>{item.foodItemId.title}</td>
                                                         <td>{item.quantity}</td>
-                                                        <td>${item.price.toFixed(2)}</td>
-                                                        <td>${(item.price * item.quantity).toFixed(2)}</td>
+                                                        <td>${item.foodItemId.price.toFixed(2)}</td>
+                                                        <td>
+                                                            ${(
+                                                            item.foodItemId.price * item.quantity
+                                                        ).toFixed(2)}
+                                                        </td>
                                                     </tr>
                                                 ))}
                                                 </tbody>
                                             </table>
                                             <div className="order-summary">
-                                                <p>Phí giao hàng: ${order.deliveryFee.toFixed(2)}</p>
-                                                <p>Tổng cộng: ${order.total.toFixed(2)}</p>
+                                                <p>Phí giao hàng: ${order.shippingFee.toFixed(2)}</p>
+                                                <p>Tổng cộng: ${order.totalAmount.toFixed(2)}</p>
                                             </div>
                                         </div>
                                         <div className="delivery-info">
                                             <h4>Thông tin giao hàng</h4>
-                                            <p>Họ tên: {order.deliveryInfo.firstName} {order.deliveryInfo.lastName}</p>
-                                            <p>Email: {order.deliveryInfo.email}</p>
-                                            <p>Địa chỉ: {order.deliveryInfo.address}</p>
-                                            <p>Số điện thoại: {order.deliveryInfo.phone}</p>
+                                            <p>Họ tên: {order.name}</p>
+                                            {order.email && <p>Email: {order.email}</p>}
+                                            <p>Địa chỉ: {order.address}</p>
+                                            {order.phone && <p>Số điện thoại: {order.phone}</p>}
                                         </div>
                                     </>
                                 )}
