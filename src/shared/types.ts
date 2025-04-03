@@ -33,11 +33,27 @@ export interface ContextCartItem {
     quantity: number;
 }
 
+// export interface User {
+//     id: string;
+//     name: string;
+//     email: string;
+//     address: string;
+//     phone: string;
+//     role: string;
+// }
+
 export interface User {
-    id: string;
-    name: string;
+    _id: string;
     email: string;
-    address: string;
+    name: string;
     phone: string;
+    address: string;
     role: string;
+}
+
+export interface UserProfile {
+    email: string;
+    name: string;
+    phone: string;
+    address: string;
 }
