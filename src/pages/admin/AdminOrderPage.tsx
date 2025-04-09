@@ -19,7 +19,7 @@ const AdminOrdersPage: React.FC = () => {
             }
 
             try {
-                const response = await fetch('http://localhost:4999/api/orders/history', {
+                const response = await fetch('http://localhost:4999/api/orders/all', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

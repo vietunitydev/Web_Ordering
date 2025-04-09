@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import './AdminUsersPage.css';
-
-interface User {
-    username: string;
-    email: string;
-    avatar?: string;
-    _id?: string; // Thêm nếu server trả về ID
-}
+import { User } from "../../shared/types.ts";
 
 const AdminUsersPage: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
@@ -36,10 +30,13 @@ const AdminUsersPage: React.FC = () => {
 
                 const data = await response.json();
                 const formattedUsers: User[] = data.users.map((user: any) => ({
-                    _id: user._id, // Lưu ID nếu server trả về
-                    username: user.username,
+                    _id: user._id.toString(), // Chuyển ObjectId thành string
                     email: user.email,
-                    avatar: user.avatar || '', // Giả sử avatar có thể null
+                    name: user.name, // Sử dụng 'name' thay vì 'username'
+                    phone: user.phone || '', // Giả sử có trường phone
+                    address: user.address || '', // Giả sử có trường address
+                    role: user.role || 'user', // Giả sử có trường role
+                    avatar: user.avatar || '', // Giả sử có trường avatar
                 }));
 
                 setUsers(formattedUsers);
@@ -54,7 +51,7 @@ const AdminUsersPage: React.FC = () => {
         fetchUsers();
     }, []);
 
-    const handleDelete = async (email: string) => {
+    const handleDelete = async (userId: string) => { // Sử dụng _id thay vì email để xóa
         if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -63,8 +60,8 @@ const AdminUsersPage: React.FC = () => {
             }
 
             try {
-                // Gọi API để xóa người dùng trên server
-                await fetch(`http://localhost:4999/api/users/${email}`, { // Giả sử endpoint xóa theo email
+                // Gọi API để xóa người dùng trên server (sử dụng _id thay vì email)
+                await fetch(`http://localhost:4999/api/users/${userId}`, { // Endpoint xóa theo _id
                     method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -72,7 +69,7 @@ const AdminUsersPage: React.FC = () => {
                 });
 
                 // Cập nhật state sau khi xóa
-                const updatedUsers = users.filter((user) => user.email !== email);
+                const updatedUsers = users.filter((user) => user._id !== userId);
                 setUsers(updatedUsers);
                 setError(null);
             } catch (err) {
@@ -110,28 +107,27 @@ const AdminUsersPage: React.FC = () => {
                     <table className="users-table">
                         <thead>
                         <tr>
-                            <th>Avatar</th>
-                            <th>Username</th>
+                            <th>Name</th>
                             <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Role</th>
                             <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
                         {users.map((user) => (
-                            <tr key={user._id || user.email}> {/* Sử dụng _id nếu có, nếu không dùng email */}
-                                <td>
-                                    {user.avatar ? (
-                                        <img src={user.avatar} alt={user.username} className="user-avatar" />
-                                    ) : (
-                                        'No Avatar'
-                                    )}
-                                </td>
-                                <td>{user.username}</td>
+                            <tr key={user._id}>
+
+                                <td>{user.name}</td>
                                 <td>{user.email}</td>
+                                <td>{user.phone || 'N/A'}</td>
+                                <td>{user.address || 'N/A'}</td>
+                                <td>{user.role}</td>
                                 <td>
                                     <button
                                         className="delete-btn"
-                                        onClick={() => handleDelete(user.email)}
+                                        onClick={() => handleDelete(user._id)}
                                     >
                                         Delete
                                     </button>
