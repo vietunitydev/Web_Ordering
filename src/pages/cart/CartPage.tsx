@@ -12,10 +12,10 @@ const CartPage: React.FC = () => {
 
     useEffect(() => {
         const fetchCart = async () => {
+            if (state.role !== 'user') return;
             try {
-                const token = localStorage.getItem('token');
                 const response = await axios.get('http://localhost:4999/api/carts/my-cart', {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${state.token}` },
                 });
                 const cartItems = response.data.list.map((item: any) => ({
                     id: item.foodItemId._id,
@@ -29,8 +29,8 @@ const CartPage: React.FC = () => {
                 console.error('Lỗi khi lấy giỏ hàng:', error);
             }
         };
-        if (state.user) fetchCart();
-    }, [dispatch, state.user]);
+        if (state.token && state.role === 'user') fetchCart();
+    }, [dispatch, state.token, state.role]);
 
     const updateQuantityLocally = (id: string, newQuantity: number) => {
         if (isNaN(newQuantity) || newQuantity < 1) return;
@@ -43,12 +43,11 @@ const CartPage: React.FC = () => {
 
     const updateCartOnServer = async () => {
         try {
-            const token = localStorage.getItem('token');
             for (const item of state.cart) {
                 await axios.put(
                     'http://localhost:4999/api/carts/update',
                     { foodItemId: item.id, quantity: item.quantity },
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { headers: { Authorization: `Bearer ${state.token}` } }
                 );
             }
             alert('Giỏ hàng đã được cập nhật trên server!');
@@ -71,10 +70,13 @@ const CartPage: React.FC = () => {
         navigate('/checkout');
     };
 
+    if (state.role !== 'user') {
+        return <div>Bạn không có quyền truy cập trang này.</div>;
+    }
+
     return (
         <div className="cart-page">
             <h2 className="cart-title">Giỏ hàng</h2>
-
             {state.cart.length === 0 ? (
                 <p>Giỏ hàng của bạn đang trống.</p>
             ) : (
@@ -125,14 +127,12 @@ const CartPage: React.FC = () => {
                             ))}
                             </tbody>
                         </table>
-
                         <div className="update-cart-container">
                             <button onClick={updateCartOnServer} className="update-cart-button">
                                 Update Cart
                             </button>
                         </div>
                     </div>
-
                     <div className="cart-summary">
                         <div className="summary-left">
                             <h3 className="summary-title">Cart Total</h3>
@@ -152,7 +152,6 @@ const CartPage: React.FC = () => {
                                 Proceed to Checkout
                             </button>
                         </div>
-
                         <div className="summary-right">
                             <div className="promo-section">
                                 <p>IF YOU HAVE A PROMO CODE, ENTER IT HERE</p>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { useAppContext, actions} from '../../components/AppContext/AppContext.tsx';
+import { useAppContext, actions } from '../../components/AppContext/AppContext.tsx';
 import axios from 'axios';
 import './FoodPage.css';
-import {FoodItem} from "../../shared/types.ts";
+import { FoodItem } from "../../shared/types.ts";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -39,18 +39,21 @@ const FoodPage: React.FC = () => {
     }, []);
 
     const addToCart = async (item: FoodItem) => {
-        if (!state.user) {
+        if (!state.token) {
             alert('Vui lòng đăng nhập để thêm vào giỏ hàng!');
             navigate('/login');
             return;
         }
+        if (state.role !== 'user') {
+            alert('Chỉ tài khoản người dùng mới có thể thêm vào giỏ hàng!');
+            return;
+        }
 
         try {
-            const token = localStorage.getItem('token');
             const response = await axios.post(
                 'http://localhost:4999/api/carts/add',
                 { foodItemId: item._id, quantity: 1 },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${state.token}` } }
             );
             dispatch({
                 type: actions.ADD_TO_CART,
@@ -100,12 +103,7 @@ const FoodPage: React.FC = () => {
             </div>
 
             <div className="pagination">
-                <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                >
-                    {'<'}
-                </button>
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>{'<'}</button>
                 {Array.from({ length: totalPages }, (_, index) => (
                     <button
                         key={index + 1}
@@ -115,12 +113,7 @@ const FoodPage: React.FC = () => {
                         {index + 1}
                     </button>
                 ))}
-                <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                >
-                    {'>'}
-                </button>
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>{'>'}</button>
             </div>
         </div>
     );

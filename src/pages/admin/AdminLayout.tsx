@@ -1,19 +1,24 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminLayout.css';
 import plus from '../../assets/plus.png';
 import item_lists from '../../assets/item_lists.png';
 import orders from '../../assets/orders.png';
 import users_icon from '../../assets/avatar_icon.png';
-import {actions, useAppContext} from "../../components/AppContext/AppContext.tsx";
+import { actions, useAppContext } from "../../components/AppContext/AppContext.tsx";
 
 const AdminLayout: React.FC<{ children: React.ReactNode; activePage: string }> = ({ children, activePage }) => {
     const navigate = useNavigate();
-    const { dispatch } = useAppContext();
+    const { state, dispatch } = useAppContext();
 
     const handleLogout = () => {
         dispatch({ type: actions.LOGOUT });
         navigate('/home');
     };
+
+    if (state.role !== 'admin') {
+        return <div>Bạn không có quyền truy cập trang này.</div>;
+    }
 
     return (
         <div className="admin-layout">

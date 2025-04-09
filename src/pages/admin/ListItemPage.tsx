@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import axios from 'axios';
 import './ListItemsPage.css';
+import { useAppContext } from '../../components/AppContext/AppContext.tsx';
 
 interface Item {
     _id: string;
@@ -13,24 +14,30 @@ interface Item {
 }
 
 const ListItemsPage: React.FC = () => {
+    const { state } = useAppContext();
     const [items, setItems] = useState<Item[]>([]);
 
     useEffect(() => {
         const fetchItems = async () => {
+            if (state.role !== 'admin') return;
             try {
-                const response = await axios.get('http://localhost:4999/api/foodItems');
+                const response = await axios.get('http://localhost:4999/api/foodItems', {
+                    headers: { Authorization: `Bearer ${state.token}` }
+                });
                 setItems(response.data);
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách sản phẩm:', error);
             }
         };
-        fetchItems();
-    }, []);
+        if (state.token && state.role === 'admin') fetchItems();
+    }, [state.token, state.role]);
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
             try {
-                await axios.delete(`http://localhost:4999/api/foodItems/${id}`);
+                await axios.delete(`http://localhost:4999/api/foodItems/${id}`, {
+                    headers: { Authorization: `Bearer ${state.token}` }
+                });
                 setItems((prevItems) => prevItems.filter((item) => item._id !== id));
                 alert('Sản phẩm đã được xóa!');
             } catch (error) {
@@ -73,10 +80,7 @@ const ListItemsPage: React.FC = () => {
                                 <td>{item.type}</td>
                                 <td>${item.price.toFixed(2)}</td>
                                 <td>
-                                    <button
-                                        className="delete-btn"
-                                        onClick={() => handleDelete(item._id)}
-                                    >
+                                    <button className="delete-btn" onClick={() => handleDelete(item._id)}>
                                         Delete
                                     </button>
                                 </td>

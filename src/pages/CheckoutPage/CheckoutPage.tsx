@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Đảm bảo đã cài đặt axios
+import axios from 'axios';
 import './CheckoutPage.css';
+import { useAppContext, actions } from '../../components/AppContext/AppContext.tsx';
 
 const CheckoutPage: React.FC = () => {
+    const { state, dispatch } = useAppContext();
     const [cart, setCart] = useState<{ id: string; name: string; price: number; quantity: number }[]>([]);
     const [formData, setFormData] = useState({
         firstName: '',
@@ -13,23 +15,15 @@ const CheckoutPage: React.FC = () => {
     });
     const navigate = useNavigate();
 
-    // Lấy thông tin giỏ hàng và người dùng từ server hoặc localStorage khi component mount
     useEffect(() => {
         const fetchCart = async () => {
+            if (state.role !== 'user') return;
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    alert('Please log in to proceed.');
-                    navigate('/login');
-                    return;
-                }
-
-                // Lấy giỏ hàng từ server (giả sử bạn có endpoint /api/carts/my-cart)
-                const cartResponse = await axios.get('http://localhost:4999/api/carts/my-cart', {
-                    headers: { Authorization: `Bearer ${token}` },
+                const response = await axios.get('http://localhost:4999/api/carts/my-cart', {
+                    headers: { Authorization: `Bearer ${state.token}` },
                 });
 
-                const cartItems = cartResponse.data.list.map((item: any) => ({
+                const cartItems = response.data.list.map((item: any) => ({
                     id: item.foodItemId._id,
                     name: item.foodItemId.title,
                     price: item.foodItemId.price,
@@ -38,32 +32,29 @@ const CheckoutPage: React.FC = () => {
 
                 setCart(cartItems);
 
-                // Lấy thông tin người dùng từ localStorage hoặc server
-                const userInfo = localStorage.getItem('user');
-                if (userInfo) {
-                    const user = JSON.parse(userInfo);
-                    setFormData({
-                        firstName: user.name || '',
-                        email: user.email || '',
-                        address: user.address || '',
-                        phone: user.phone || '',
-                    });
-                }
+                const userResponse = await axios.get('http://localhost:4999/api/auth/me', {
+                    headers: { Authorization: `Bearer ${state.token}` },
+                });
+                const user = userResponse.data.data;
+                setFormData({
+                    firstName: user.name || '',
+                    email: user.email || '',
+                    address: user.address || '',
+                    phone: user.phone || '',
+                });
             } catch (error) {
                 console.error('Error fetching cart or user data:', error);
                 alert('Failed to load cart or user data. Please try again.');
             }
         };
 
-        fetchCart();
-    }, [navigate]);
+        if (state.token && state.role === 'user') fetchCart();
+    }, [navigate, state.token, state.role]);
 
-    // Tính toán tổng giá trị
     const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const deliveryFee = 2;
     const total = subtotal + deliveryFee;
 
-    // Xử lý thay đổi input
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -72,7 +63,6 @@ const CheckoutPage: React.FC = () => {
         }));
     };
 
-    // Xử lý khi nhấn nút "Proceed to Payment"
     const handleProceedToPayment = async () => {
         if (!formData.firstName || !formData.email || !formData.address || !formData.phone) {
             alert('Please fill in all delivery information fields.');
@@ -80,20 +70,10 @@ const CheckoutPage: React.FC = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('Please log in to proceed.');
-                navigate('/login');
-                return;
-            }
-
-            console.log("start oder");
-
             const orderData = {
-                userId: JSON.parse(localStorage.getItem('user') || '{}').id,
                 name: formData.firstName,
                 address: formData.address,
-                email : formData.email,
+                email: formData.email,
                 phone: formData.phone,
                 shippingFee: deliveryFee,
                 totalAmount: subtotal + deliveryFee,
@@ -106,21 +86,16 @@ const CheckoutPage: React.FC = () => {
                 }))
             };
 
-            console.log(orderData);
-
-            // Gửi order lên server
             const response = await axios.post('http://localhost:4999/api/orders/create', orderData, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${state.token}` }
             });
 
-            if(response){
-                alert('Order placed successfully! You can view order history in the "Order History" page.');
-
+            if (response) {
                 await axios.delete('http://localhost:4999/api/carts/clear', {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${state.token}` }
                 });
-
-                setCart([]);
+                dispatch({ type: actions.CLEAR_CART });
+                alert('Order placed successfully! You can view order history in the "Order History" page.');
                 navigate('/order-history');
             }
         } catch (error) {
@@ -128,6 +103,10 @@ const CheckoutPage: React.FC = () => {
             alert('Failed to place order. Please try again.');
         }
     };
+
+    if (state.role !== 'user') {
+        return <div>Bạn không có quyền truy cập trang này.</div>;
+    }
 
     return (
         <div className="checkout-page">

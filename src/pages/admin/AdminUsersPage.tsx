@@ -2,26 +2,25 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import './AdminUsersPage.css';
 import { User } from "../../shared/types.ts";
+import { useAppContext } from '../../components/AppContext/AppContext.tsx';
 
 const AdminUsersPage: React.FC = () => {
+    const { state } = useAppContext();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
-            const token = localStorage.getItem('token'); // Lấy token từ localStorage
-            if (!token) {
-                setError('Không có token. Vui lòng đăng nhập lại.');
+            if (!state.token || state.role !== 'admin') {
+                setError('Không có quyền truy cập.');
                 setLoading(false);
                 return;
             }
 
             try {
-                const response = await fetch('http://localhost:4999/api/users/all', { // Đường dẫn API
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                const response = await fetch('http://localhost:4999/api/users/all', {
+                    headers: { Authorization: `Bearer ${state.token}` },
                 });
 
                 if (!response.ok) {
@@ -30,13 +29,13 @@ const AdminUsersPage: React.FC = () => {
 
                 const data = await response.json();
                 const formattedUsers: User[] = data.users.map((user: any) => ({
-                    _id: user._id.toString(), // Chuyển ObjectId thành string
+                    _id: user._id.toString(),
                     email: user.email,
-                    name: user.name, // Sử dụng 'name' thay vì 'username'
-                    phone: user.phone || '', // Giả sử có trường phone
-                    address: user.address || '', // Giả sử có trường address
-                    role: user.role || 'user', // Giả sử có trường role
-                    avatar: user.avatar || '', // Giả sử có trường avatar
+                    name: user.name,
+                    phone: user.phone || '',
+                    address: user.address || '',
+                    role: user.role || 'user',
+                    avatar: user.avatar || '',
                 }));
 
                 setUsers(formattedUsers);
@@ -49,26 +48,16 @@ const AdminUsersPage: React.FC = () => {
         };
 
         fetchUsers();
-    }, []);
+    }, [state.token, state.role]);
 
-    const handleDelete = async (userId: string) => { // Sử dụng _id thay vì email để xóa
+    const handleDelete = async (userId: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setError('Không có token. Vui lòng đăng nhập lại.');
-                return;
-            }
-
             try {
-                // Gọi API để xóa người dùng trên server (sử dụng _id thay vì email)
-                await fetch(`http://localhost:4999/api/users/${userId}`, { // Endpoint xóa theo _id
+                await fetch(`http://localhost:4999/api/users/${userId}`, {
                     method: 'DELETE',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${state.token}` },
                 });
 
-                // Cập nhật state sau khi xóa
                 const updatedUsers = users.filter((user) => user._id !== userId);
                 setUsers(updatedUsers);
                 setError(null);
@@ -118,17 +107,13 @@ const AdminUsersPage: React.FC = () => {
                         <tbody>
                         {users.map((user) => (
                             <tr key={user._id}>
-
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>{user.phone || 'N/A'}</td>
                                 <td>{user.address || 'N/A'}</td>
                                 <td>{user.role}</td>
                                 <td>
-                                    <button
-                                        className="delete-btn"
-                                        onClick={() => handleDelete(user._id)}
-                                    >
+                                    <button className="delete-btn" onClick={() => handleDelete(user._id)}>
                                         Delete
                                     </button>
                                 </td>

@@ -3,8 +3,10 @@ import AdminLayout from './AdminLayout';
 import axios from 'axios';
 import './AddItemPage.css';
 import upload from '../../assets/upload.png';
+import { useAppContext } from '../../components/AppContext/AppContext.tsx';
 
 const AddItemPage: React.FC = () => {
+    const { state } = useAppContext();
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -48,16 +50,10 @@ const AddItemPage: React.FC = () => {
         data.append('price', formData.price);
         data.append('image', formData.image);
 
-        console.log('Dữ liệu gửi đi:', {
-            title: formData.title,
-            description: formData.description,
-            type: formData.type,
-            price: formData.price,
-            image: formData.image,
-        });
-
         try {
-            await axios.post('http://localhost:4999/api/foodItems', data);
+            await axios.post('http://localhost:4999/api/foodItems', data, {
+                headers: { Authorization: `Bearer ${state.token}` }
+            });
             alert('Sản phẩm đã được thêm thành công!');
             setFormData({ title: '', description: '', type: '', price: '', image: null });
             setImagePreview(null);
@@ -120,7 +116,6 @@ const AddItemPage: React.FC = () => {
                                 value={formData.type}
                                 onChange={handleInputChange}
                             >
-                                {/*<option value="">Chọn danh mục</option>*/}
                                 <option value="main">Món chính</option>
                                 <option value="dessert">Tráng miệng</option>
                                 <option value="fast_food">Đồ ăn nhanh</option>
@@ -139,9 +134,7 @@ const AddItemPage: React.FC = () => {
                             />
                         </div>
                     </div>
-                    <button type="submit" className="add-btn">
-                        Thêm sản phẩm
-                    </button>
+                    <button type="submit" className="add-btn">Thêm sản phẩm</button>
                 </form>
             </div>
         </AdminLayout>

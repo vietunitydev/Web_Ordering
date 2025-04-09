@@ -1,9 +1,10 @@
 import React, { createContext, useReducer, useEffect, useContext } from 'react';
-import { ContextCartItem, User } from '../../shared/types';
+import { ContextCartItem } from '../../shared/types';
 
 interface AppState {
     cart: ContextCartItem[];
-    user: User | null;
+    token: string | null;
+    role: string | null;
 }
 
 interface AppContextType {
@@ -13,7 +14,8 @@ interface AppContextType {
 
 const initialState: AppState = {
     cart: [],
-    user: null,
+    token: null,
+    role: null,
 };
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -31,9 +33,9 @@ export const actionTypes = {
 const appReducer = (state: AppState, action: any): AppState => {
     switch (action.type) {
         case actionTypes.LOGIN:
-            return { ...state, user: action.payload };
+            return { ...state, token: action.payload.token, role: action.payload.role };
         case actionTypes.LOGOUT:
-            return { ...state, user: null, cart: [] };
+            return { ...state, token: null, role: null, cart: [] };
         case actionTypes.ADD_TO_CART:
             const existingItem = state.cart.find((item) => item.id === action.payload.id);
             if (existingItem) {
@@ -69,31 +71,40 @@ const appReducer = (state: AppState, action: any): AppState => {
     }
 };
 
-// Provider để bọc ứng dụng
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-
-    //  useReducer(appReducer, initialState, initializerFunction)
-    //  appReducer: Hàm reducer để xử lý các action.
-    //  initialState: State ban đầu (chưa dùng vì có initializer function).
-    //  initializerFunction: Hàm khởi tạo state ban đầu từ localStorage.
-
     const [state, dispatch] = useReducer(appReducer, initialState, () => {
-        const savedUser = localStorage.getItem('user');
+        const savedToken = localStorage.getItem('token');
         return {
             cart: [],
-            user: savedUser ? JSON.parse(savedUser) : null,
+            token: savedToken,
+            role: null, // Role sẽ được lấy từ server sau khi đăng nhập
         };
     });
 
     useEffect(() => {
-        localStorage.setItem('user', JSON.stringify(state.user));
-    }, [state.user]);
+        const fetchRole = async () => {
+            if (state.token && !state.role) {
+                try {
+                    const response = await fetch('http://localhost:4999/api/auth/me', {
+                        headers: { Authorization: `Bearer ${state.token}` },
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        dispatch({ type: actionTypes.LOGIN, payload: { token: state.token, role: data.data.role } });
+                    } else {
+                        dispatch({ type: actionTypes.LOGOUT });
+                    }
+                } catch (err) {
+                    dispatch({ type: actionTypes.LOGOUT });
+                }
+            }
+        };
+        fetchRole();
+
+        localStorage.setItem('token', state.token || '');
+    }, [state.token]);
 
     return (
-        //  AppContext.Provider cung cấp state và dispatch cho toàn bộ ứng dụng.
-        //  Các component con có thể dùng useContext(AppContext) để truy cập state hoặc gọi dispatch.
-        //  children: Các component con được bọc bởi AppProvider.
-
         <AppContext.Provider value={{ state, dispatch }}>
             {children}
         </AppContext.Provider>

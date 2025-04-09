@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ProfilePage.css';
 import { UserProfile } from "../../shared/types.ts";
+import { useAppContext } from '../../components/AppContext/AppContext.tsx';
 
 const ProfilePage: React.FC = () => {
+    const { state } = useAppContext();
     const [user, setUser] = useState<UserProfile | null>(null);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -19,18 +21,16 @@ const ProfilePage: React.FC = () => {
     const [showPasswordForm, setShowPasswordForm] = useState(false);
     const navigate = useNavigate();
 
-    // Load user data from server on mount
     useEffect(() => {
         const fetchUserData = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
+            if (!state.token || state.role !== 'user') {
                 navigate('/login');
                 return;
             }
 
             try {
                 const response = await axios.get('http://localhost:4999/api/auth/me', {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${state.token}` },
                 });
 
                 const fetchedUser: UserProfile = response.data.data;
@@ -39,7 +39,6 @@ const ProfilePage: React.FC = () => {
                 setEmail(fetchedUser.email || '');
                 setPhone(fetchedUser.phone || '');
                 setAddress(fetchedUser.address || '');
-                localStorage.setItem('user', JSON.stringify(fetchedUser));
             } catch (err) {
                 console.error('Error fetching user data:', err);
                 setError('Không thể tải thông tin người dùng. Vui lòng đăng nhập lại.');
@@ -50,9 +49,8 @@ const ProfilePage: React.FC = () => {
         };
 
         fetchUserData();
-    }, [navigate]);
+    }, [navigate, state.token, state.role]);
 
-    // Handle form submission (save profile changes)
     const handleSaveChanges = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -75,22 +73,13 @@ const ProfilePage: React.FC = () => {
         };
 
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                navigate('/login');
-                return;
-            }
-
             await axios.put(
                 'http://localhost:4999/api/users/update',
                 updatedUser,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
+                { headers: { Authorization: `Bearer ${state.token}` } }
             );
 
             setUser(updatedUser);
-            localStorage.setItem('user', JSON.stringify(updatedUser));
             setError('');
             alert('Thông tin đã được cập nhật thành công!');
         } catch (err) {
@@ -99,7 +88,6 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    // Handle password change
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -119,30 +107,18 @@ const ProfilePage: React.FC = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                navigate('/login');
-                return;
-            }
-
             const response = await axios.put(
                 'http://localhost:4999/api/auth/change-password',
-                {
-                    currentPassword,
-                    newPassword,
-                },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
+                { currentPassword, newPassword },
+                { headers: { Authorization: `Bearer ${state.token}` } }
             );
 
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
             setPasswordError('');
-            setShowPasswordForm(false); // Ẩn form sau khi đổi thành công
+            setShowPasswordForm(false);
             alert('Mật khẩu đã được thay đổi thành công!');
-
             localStorage.setItem('token', response.data.token);
         } catch (err: any) {
             console.error('Error changing password:', err);
@@ -150,22 +126,13 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    // Handle delete account
     const handleDeleteAccount = async () => {
         if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác.')) {
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    navigate('/login');
-                    return;
-                }
-
                 await axios.delete('http://localhost:4999/api/users/delete', {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { Authorization: `Bearer ${state.token}` },
                 });
 
-                localStorage.removeItem('user');
-                localStorage.removeItem('cart');
                 localStorage.removeItem('token');
                 navigate('/home');
             } catch (err) {
@@ -175,10 +142,9 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    // Toggle password form visibility
     const togglePasswordForm = () => {
         setShowPasswordForm(!showPasswordForm);
-        setPasswordError(''); // Reset lỗi khi mở/đóng form
+        setPasswordError('');
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -188,7 +154,7 @@ const ProfilePage: React.FC = () => {
         return <div className="profile-page">Đang tải...</div>;
     }
 
-    if (!user) {
+    if (!user || state.role !== 'user') {
         return null;
     }
 
@@ -202,7 +168,6 @@ const ProfilePage: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Chỉ hiển thị form thông tin cá nhân khi không hiển thị form đổi mật khẩu */}
                 {!showPasswordForm && (
                     <>
                         <h3>Thay đổi thông tin</h3>
@@ -210,57 +175,34 @@ const ProfilePage: React.FC = () => {
                         <form onSubmit={handleSaveChanges}>
                             <div className="form-group">
                                 <label>Tên</label>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
+                                <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label>Email</label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label>SĐT</label>
-                                <input
-                                    type="tel"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                />
+                                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label>Địa chỉ</label>
-                                <input
-                                    type="text"
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
-                                />
+                                <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label>Mật khẩu</label>
                                 <input type="password" value="********" disabled />
                                 <div className="change-password-wrapper">
-                                    <button
-                                        type="button"
-                                        className="change-password-link"
-                                        onClick={togglePasswordForm}
-                                    >
+                                    <button type="button" className="change-password-link" onClick={togglePasswordForm}>
                                         Đổi mật khẩu
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" className="save-btn">
-                                Lưu thay đổi
-                            </button>
+                            <button type="submit" className="save-btn">Lưu thay đổi</button>
                         </form>
                     </>
                 )}
 
-                {/* Form đổi mật khẩu (hiển thị khi nhấn nút) */}
                 {showPasswordForm && (
                     <div className="password-form">
                         <h3>Đổi mật khẩu</h3>
@@ -268,38 +210,18 @@ const ProfilePage: React.FC = () => {
                         <form onSubmit={handleChangePassword}>
                             <div className="form-group">
                                 <label>Mật khẩu hiện tại</label>
-                                <input
-                                    type="password"
-                                    value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
-                                />
+                                <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label>Mật khẩu mới</label>
-                                <input
-                                    type="password"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                />
+                                <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                             </div>
                             <div className="form-group">
                                 <label>Xác nhận mật khẩu mới</label>
-                                <input
-                                    type="password"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                />
+                                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                             </div>
-                            <button type="submit" className="save-btn">
-                                Xác nhận đổi mật khẩu
-                            </button>
-                            <button
-                                type="button"
-                                className="cancel-btn"
-                                onClick={togglePasswordForm}
-                            >
-                                Hủy
-                            </button>
+                            <button type="submit" className="save-btn">Xác nhận đổi mật khẩu</button>
+                            <button type="button" className="cancel-btn" onClick={togglePasswordForm}>Hủy</button>
                         </form>
                     </div>
                 )}

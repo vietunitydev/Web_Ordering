@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import './AdminOrdersPage.css';
-import {OrderItem} from "../../shared/types.ts";
+import { OrderItem } from "../../shared/types.ts";
+import { useAppContext } from '../../components/AppContext/AppContext.tsx';
+import axios from "axios";
 
 const AdminOrdersPage: React.FC = () => {
+    const { state } = useAppContext();
     const [orders, setOrders] = useState<OrderItem[]>([]);
     const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -11,18 +14,15 @@ const AdminOrdersPage: React.FC = () => {
 
     useEffect(() => {
         const fetchOrderHistory = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setError('Không có token. Vui lòng đăng nhập lại.');
+            if (!state.token || state.role !== 'admin') {
+                setError('Không có quyền truy cập.');
                 setLoading(false);
                 return;
             }
 
             try {
                 const response = await fetch('http://localhost:4999/api/orders/all', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${state.token}` },
                 });
 
                 if (!response.ok) {
@@ -30,7 +30,6 @@ const AdminOrdersPage: React.FC = () => {
                 }
 
                 const data = await response.json();
-                console.log(data);
                 const formattedOrders: OrderItem[] = data.orders.map((order: any) => ({
                     _id: order._id.toString(),
                     userId: order.userId.toString(),
@@ -62,15 +61,23 @@ const AdminOrdersPage: React.FC = () => {
         };
 
         fetchOrderHistory();
-    }, []);
+    }, [state.token, state.role]);
 
-    const handleUpdateStatus = (id: string, newStatus: string) => {
+    const handleUpdateStatus = async (id: string, newStatus: string) => {
         const updatedOrders = orders.map((order) =>
             order._id === id ? { ...order, status: newStatus as OrderItem['status'] } : order
         );
         setOrders(updatedOrders);
-        // Gọi API để cập nhật status trên server (nếu cần)
-        // Ví dụ: await axios.put(`http://localhost:4999/api/orders/${id}/status`, { status: newStatus }, { headers: { Authorization: `Bearer ${token}` } });
+
+        try {
+            await axios.put(
+                `http://localhost:4999/api/orders/${id}/status`,
+                { status: newStatus },
+                { headers: { Authorization: `Bearer ${state.token}` } }
+            );
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
     };
 
     const toggleOrderDetails = (id: string) => {

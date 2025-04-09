@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './LoginForm.css';
-import {actions, useAppContext} from "../../components/AppContext/AppContext.tsx";
+import { actions, useAppContext } from "../../components/AppContext/AppContext.tsx";
 
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -24,30 +24,25 @@ const LoginForm: React.FC = () => {
         setLoading(true);
 
         try {
-            // Call the login API
             const response = await axios.post('http://localhost:4999/api/auth/login', {
                 email,
                 password,
             });
 
-            if (response.data.success) {
-                // Dispatch action LOGIN để cập nhật trạng thái người dùng trong context
-                dispatch({ type: actions.LOGIN, payload: response.data.user });
+            if (response.data.token) {
+                const token = response.data.token;
+                const userResponse = await axios.get('http://localhost:4999/api/auth/me', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const role = userResponse.data.data.role;
 
-                // Store token in local storage (nếu cần cho các request API sau này)
-                localStorage.setItem('token', response.data.token);
+                dispatch({ type: actions.LOGIN, payload: { token, role } });
 
-                console.log(response.data.user);
-
-                if (response.data.user.role == "admin") {
-                    // Redirect to home page
+                if (role === "admin") {
                     navigate('/admin');
-                }
-                else{
-                    // Redirect to home page
+                } else {
                     navigate('/home');
                 }
-
             } else {
                 setError('Đăng nhập không thành công.');
             }
@@ -89,11 +84,7 @@ const LoginForm: React.FC = () => {
                         </label>
                         <Link to="/forgot-password">Quên mật khẩu?</Link>
                     </div>
-                    <button
-                        type="submit"
-                        className="login-button"
-                        disabled={loading}
-                    >
+                    <button type="submit" className="login-button" disabled={loading}>
                         {loading ? 'Đang xử lý...' : 'Đăng Nhập'}
                     </button>
                     <p className="policy-text">
@@ -110,5 +101,3 @@ const LoginForm: React.FC = () => {
 };
 
 export default LoginForm;
-
-// Axios is a popular HTTP Client library for JavaScript and Node.js. It helps you make HTTP requests (requests) to APIs or web services from your application.
