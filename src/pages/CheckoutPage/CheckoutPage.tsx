@@ -90,16 +90,16 @@ const CheckoutPage: React.FC = () => {
             console.log("start oder");
 
             const orderData = {
-                userId: JSON.parse(localStorage.getItem('user') || '{}').id, // Lấy userId từ localStorage
+                userId: JSON.parse(localStorage.getItem('user') || '{}').id,
                 name: formData.firstName,
                 address: formData.address,
                 email : formData.email,
                 phone: formData.phone,
                 shippingFee: deliveryFee,
-                totalAmount: subtotal + deliveryFee, // Tổng trước khi discount
-                payment: subtotal, // Giả sử không có discount, bạn có thể thêm logic discount sau
-                paymentMethod: 'cash', // Mặc định là cash, có thể thay đổi
-                discount: 0.0, // Mặc định không có discount, bạn có thể mở rộng
+                totalAmount: subtotal + deliveryFee,
+                payment: subtotal,
+                paymentMethod: 'cash',
+                discount: 0.0,
                 items: cart.map(item => ({
                     foodItemId: item.id,
                     quantity: item.quantity

@@ -24,7 +24,6 @@ export interface ApiCart {
     list: ApiCartItem[];
 }
 
-// Interface cho item trong AppContext
 export interface ContextCartItem {
     id: string;
     name: string;
@@ -33,14 +32,6 @@ export interface ContextCartItem {
     quantity: number;
 }
 
-// export interface User {
-//     id: string;
-//     name: string;
-//     email: string;
-//     address: string;
-//     phone: string;
-//     role: string;
-// }
 
 export interface User {
     _id: string;
@@ -56,4 +47,25 @@ export interface UserProfile {
     name: string;
     phone: string;
     address: string;
+}
+
+export interface OrderItem {
+    _id: string;
+    userId: string;
+    name: string;
+    address: string;
+    email: string;
+    phone: string;
+    status: string;
+    shippingFee: string;
+    totalAmount: number;
+    payment: number;
+    paymentMethod: string;
+    discount: number;
+    items: [{
+        foodItem: FoodItem;
+        quantity: number;
+    }]
+    createdAt: Date;
+    updatedAt: Date;
 }
