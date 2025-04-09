@@ -78,9 +78,7 @@ const LoginForm: React.FC = () => {
                         <label>
                             <input type="checkbox" /> Lưu thông tin đăng nhập
                         </label>
-                        <a href="#" className="forgot-password">
-                            Quên mật khẩu?
-                        </a>
+                        <Link to="/forgot-password">Quên mật khẩu?</Link>
                     </div>
                     <button
                         type="submit"

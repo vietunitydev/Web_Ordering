@@ -15,6 +15,8 @@ import ListItemsPage from "./pages/admin/ListItemPage.tsx";
 import AdminOrdersPage from "./pages/admin/AdminOrderPage.tsx";
 import {AppProvider} from "./components/AppContext/AppContext.tsx";
 import AdminUsersPage from "./pages/admin/AdminUsersPage.tsx";
+import ResetPasswordForm from "./pages/login/ResetPasswordForm.tsx";
+import ForgotPassword from "./pages/login/ForgotPassword.tsx";
 
 
 const App: React.FC = () => {
@@ -32,6 +34,8 @@ const App: React.FC = () => {
                         <Route path="/order-history" element={<OrderHistoryPage />} />
                         <Route path="/login" element={<LoginForm />} />
                         <Route path="/register" element={<RegisterForm />} />
+                        <Route path="/forgot-password" element={<ForgotPassword/>} />
+                        <Route path="/reset-password/:resettoken" element={<ResetPasswordForm/>} />
                     </Route>
 
                     <Route path="/admin" element={<AddItemPage />} />
