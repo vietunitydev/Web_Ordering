@@ -113,16 +113,15 @@ const CheckoutPage: React.FC = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            if(!response){
+            if(response){
                 alert('Order placed successfully! You can view order history in the "Order History" page.');
 
-                // Xóa giỏ hàng trên server (nếu cần)
                 await axios.delete('http://localhost:4999/api/carts/clear', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                setCart([]); // Xóa giỏ hàng locally
-                navigate('/order-history'); // Chuyển đến trang lịch sử order
+                setCart([]);
+                navigate('/order-history');
             }
         } catch (error) {
             console.error('Error placing order:', error);

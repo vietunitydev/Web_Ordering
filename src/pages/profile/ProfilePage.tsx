@@ -144,7 +144,7 @@ const ProfilePage: React.FC = () => {
             alert('Mật khẩu đã được thay đổi thành công!');
 
             localStorage.setItem('token', response.data.token);
-        } catch (err : any) {
+        } catch (err: any) {
             console.error('Error changing password:', err);
             setPasswordError(err.response?.data?.message || 'Không thể thay đổi mật khẩu. Vui lòng thử lại.');
         }
@@ -202,59 +202,63 @@ const ProfilePage: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Form thay đổi thông tin cá nhân */}
-                <h3>Thay đổi thông tin</h3>
-                {error && <p className="error-message">{error}</p>}
-                <form onSubmit={handleSaveChanges}>
-                    <div className="form-group">
-                        <label>Tên</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>SĐT</label>
-                        <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Địa chỉ</label>
-                        <input
-                            type="text"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Mật khẩu</label>
-                        <input type="password" value="********" disabled />
-                        <div className="change-password-wrapper">
-                            <button
-                                type="button"
-                                className="change-password-link"
-                                onClick={togglePasswordForm}
-                            >
-                                Đổi mật khẩu
+                {/* Chỉ hiển thị form thông tin cá nhân khi không hiển thị form đổi mật khẩu */}
+                {!showPasswordForm && (
+                    <>
+                        <h3>Thay đổi thông tin</h3>
+                        {error && <p className="error-message">{error}</p>}
+                        <form onSubmit={handleSaveChanges}>
+                            <div className="form-group">
+                                <label>Tên</label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Email</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>SĐT</label>
+                                <input
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Địa chỉ</label>
+                                <input
+                                    type="text"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Mật khẩu</label>
+                                <input type="password" value="********" disabled />
+                                <div className="change-password-wrapper">
+                                    <button
+                                        type="button"
+                                        className="change-password-link"
+                                        onClick={togglePasswordForm}
+                                    >
+                                        Đổi mật khẩu
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" className="save-btn">
+                                Lưu thay đổi
                             </button>
-                        </div>
-                    </div>
-                    <button type="submit" className="save-btn">
-                        Lưu thay đổi
-                    </button>
-                </form>
+                        </form>
+                    </>
+                )}
 
                 {/* Form đổi mật khẩu (hiển thị khi nhấn nút) */}
                 {showPasswordForm && (
