@@ -37,8 +37,17 @@ const LoginForm: React.FC = () => {
                 // Store token in local storage (nếu cần cho các request API sau này)
                 localStorage.setItem('token', response.data.token);
 
-                // Redirect to home page
-                navigate('/home');
+                console.log(response.data.user);
+
+                if (response.data.user.role == "admin") {
+                    // Redirect to home page
+                    navigate('/admin');
+                }
+                else{
+                    // Redirect to home page
+                    navigate('/home');
+                }
+
             } else {
                 setError('Đăng nhập không thành công.');
             }
