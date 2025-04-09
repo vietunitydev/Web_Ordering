@@ -16,7 +16,7 @@ const ProfilePage: React.FC = () => {
     const [error, setError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [loading, setLoading] = useState(true);
-    const [showPasswordForm, setShowPasswordForm] = useState(false); // State để hiển thị form đổi mật khẩu
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
     const navigate = useNavigate();
 
     // Load user data from server on mount
@@ -125,8 +125,8 @@ const ProfilePage: React.FC = () => {
                 return;
             }
 
-            await axios.put(
-                'http://localhost:4999/api/users/change-password',
+            const response = await axios.put(
+                'http://localhost:4999/api/auth/change-password',
                 {
                     currentPassword,
                     newPassword,
@@ -142,6 +142,8 @@ const ProfilePage: React.FC = () => {
             setPasswordError('');
             setShowPasswordForm(false); // Ẩn form sau khi đổi thành công
             alert('Mật khẩu đã được thay đổi thành công!');
+
+            localStorage.setItem('token', response.data.token);
         } catch (err : any) {
             console.error('Error changing password:', err);
             setPasswordError(err.response?.data?.message || 'Không thể thay đổi mật khẩu. Vui lòng thử lại.');
