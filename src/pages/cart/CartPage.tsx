@@ -78,7 +78,7 @@ const CartPage: React.FC = () => {
         <div className="cart-page">
             <h2 className="cart-title">Giỏ hàng</h2>
             {state.cart.length === 0 ? (
-                <p>Giỏ hàng của bạn đang trống.</p>
+                <div className="cart-empty"><p>Giỏ hàng của bạn đang trống.</p></div>
             ) : (
                 <>
                     <div className="cart-content">

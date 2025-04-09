@@ -3,6 +3,9 @@
     max-width: 1300px;
     min-height: 600px;
     margin: 0 auto;
+}
+
+.cart-empty {
     justify-items: center;
 }
 
