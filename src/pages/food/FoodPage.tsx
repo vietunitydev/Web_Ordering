@@ -14,7 +14,8 @@ const FoodPage: React.FC = () => {
     const { state, dispatch } = useAppContext();
     const navigate = useNavigate();
 
-    const category = searchParams.get('category') || 'main';
+    const category = searchParams.get('category') || '';
+    const searchTerm = searchParams.get('search') || '';
 
     const categoryTitleMap: { [key: string]: string } = {
         main: 'Món chính',
@@ -24,7 +25,7 @@ const FoodPage: React.FC = () => {
         other: 'Khác',
     };
 
-    const title = categoryTitleMap[category] || 'Món chính';
+    const title = searchTerm ? `Kết quả tìm kiếm cho "${searchTerm}"` : (categoryTitleMap[category] || 'Tất cả món ăn');
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -66,7 +67,19 @@ const FoodPage: React.FC = () => {
         }
     };
 
-    const filteredItems = items.filter((item) => item.type === category);
+    // Lọc món ăn dựa trên category hoặc search
+    const filteredItems = items.filter((item) => {
+        if (searchTerm) {
+            // Nếu có searchTerm, lọc theo title chứa chuỗi tìm kiếm
+            return item.title.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (category) {
+            // Nếu có category mà không có searchTerm, lọc theo category
+            return item.type === category;
+        } else {
+            // Nếu không có cả hai, hiển thị tất cả
+            return true;
+        }
+    });
 
     const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -80,7 +93,7 @@ const FoodPage: React.FC = () => {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [category]);
+    }, [category, searchTerm]);
 
     return (
         <div className="food-page">
@@ -89,32 +102,41 @@ const FoodPage: React.FC = () => {
                 <p className="result-count">{filteredItems.length} kết quả</p>
             </div>
 
+            {currentItems.length === 0 ? (<div className="empty-item"><p>Không tìm thấy món ăn nào.</p></div>) : (<p></p>)}
+
+
             <div className="pizza-grid">
-                {currentItems.map((item) => (
-                    <div key={item._id} className="pizza-card">
-                        <img src={`http://localhost:4999${item.imageURL}`} alt={item.title} className="pizza-image" />
-                        <h3 className="pizza-name">{item.title}</h3>
-                        <p className="pizza-price">${item.price.toFixed(2)}</p>
-                        <button onClick={() => addToCart(item)} className="add-to-cart-button">
-                            Thêm vào giỏ hàng
-                        </button>
-                    </div>
-                ))}
+                {currentItems.length === 0 ? (
+                    <p></p>
+                ) : (
+                    currentItems.map((item) => (
+                        <div key={item._id} className="pizza-card">
+                            <img src={`http://localhost:4999${item.imageURL}`} alt={item.title} className="pizza-image" />
+                            <h3 className="pizza-name">{item.title}</h3>
+                            <p className="pizza-price">${item.price.toFixed(2)}</p>
+                            <button onClick={() => addToCart(item)} className="add-to-cart-button">
+                                Thêm vào giỏ hàng
+                            </button>
+                        </div>
+                    ))
+                )}
             </div>
 
-            <div className="pagination">
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>{'<'}</button>
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                        key={index + 1}
-                        onClick={() => handlePageChange(index + 1)}
-                        className={currentPage === index + 1 ? 'active' : ''}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
-                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>{'>'}</button>
-            </div>
+            {totalPages > 1 && (
+                <div className="pagination">
+                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>{'<'}</button>
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            onClick={() => handlePageChange(index + 1)}
+                            className={currentPage === index + 1 ? 'active' : ''}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>{'>'}</button>
+                </div>
+            )}
         </div>
     );
 };

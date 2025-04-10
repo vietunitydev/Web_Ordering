@@ -85,12 +85,12 @@ const CartPage: React.FC = () => {
                         <table className="cart-table">
                             <thead>
                             <tr>
-                                <th>Items</th>
-                                <th>Title</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Remove</th>
+                                <th>Món</th>
+                                <th>Tên</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng</th>
+                                <th>Xoá</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -129,32 +129,32 @@ const CartPage: React.FC = () => {
                         </table>
                         <div className="update-cart-container">
                             <button onClick={updateCartOnServer} className="update-cart-button">
-                                Update Cart
+                                Lưu giỏ hàng
                             </button>
                         </div>
                     </div>
                     <div className="cart-summary">
                         <div className="summary-left">
-                            <h3 className="summary-title">Cart Total</h3>
+                            <h3 className="summary-title">Tổng giỏ hàng</h3>
                             <div className="summary-row">
-                                <span>Subtotal</span>
+                                <span>Tổng giá món</span>
                                 <span>${subtotal.toFixed(2)}</span>
                             </div>
                             <div className="summary-row">
-                                <span>Delivery fee</span>
+                                <span>Phí giao hàng</span>
                                 <span>${deliveryFee.toFixed(2)}</span>
                             </div>
                             <div className="summary-row total">
-                                <span>Total</span>
+                                <span>Tổng</span>
                                 <span>${total.toFixed(2)}</span>
                             </div>
                             <button onClick={handleCheckout} className="checkout-button">
-                                Proceed to Checkout
+                                Tiến hành thanh toán
                             </button>
                         </div>
                         <div className="summary-right">
                             <div className="promo-section">
-                                <p>IF YOU HAVE A PROMO CODE, ENTER IT HERE</p>
+                                <p>NẾU BẠN CÓ MÃ GIẢM GIÁ, HÃY ĐIỀN Ở ĐÂY</p>
                                 <div className="promo-input">
                                     <input
                                         type="text"
@@ -162,7 +162,7 @@ const CartPage: React.FC = () => {
                                         value={promoCode}
                                         onChange={(e) => setPromoCode(e.target.value)}
                                     />
-                                    <button onClick={handlePromoSubmit}>Submit</button>
+                                    <button onClick={handlePromoSubmit}>Xác nhận</button>
                                 </div>
                             </div>
                         </div>

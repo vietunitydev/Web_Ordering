@@ -6,6 +6,10 @@
     margin: 0 auto;
 }
 
+.empty-item{
+    justify-items: center;
+}
+
 .food-header {
     text-align: center;
     margin-bottom: 20px;
@@ -34,7 +38,7 @@
 
 .pizza-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 sản phẩm trên 1 dòng */
+    grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     padding: 0 20px;
 }

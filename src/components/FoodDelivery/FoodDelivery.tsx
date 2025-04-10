@@ -6,7 +6,7 @@ import computer from '../../assets/computer.png';
 const FoodDelivery = () => {
     return (
         <div className="food-delivery-container">
-            <h2>How to work</h2>
+            <h2>Hoạt động thế nào</h2>
             <h1 className="main-title">Thực phẩm là một phần quan trọng của chế độ ăn cân bằng.</h1>
 
             <div className="steps-container">

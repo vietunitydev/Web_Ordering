@@ -20,7 +20,7 @@ const services: ServiceSection[] = [
 const ServiceSection = () => {
     return (
         <section className="services-section">
-            <h2>Services</h2>
+            <h2>Dịch vụ</h2>
             <h1>Vì Sao Nên Chọn Món Ăn Yêu Thích Của Chúng Tôi?</h1>
             <div className="services-grid">
                 {services.map((service) => (

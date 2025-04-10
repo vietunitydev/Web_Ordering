@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './OrderHistoryPage.css';
 
-// Interface cho OrderItem từ server
 interface OrderItem {
     foodItemId: {
         _id: string;
@@ -13,18 +12,17 @@ interface OrderItem {
     quantity: number;
 }
 
-// Interface cho Order từ server
 interface Order {
-    _id: string; // Thay id bằng _id từ MongoDB
-    createdAt: string; // Thay date bằng createdAt
+    _id: string;
+    createdAt: string;
     items: OrderItem[];
-    totalAmount: number; // Thay total bằng totalAmount
-    shippingFee: number; // Thay deliveryFee bằng shippingFee
+    totalAmount: number;
+    shippingFee: number;
     status: string;
-    name: string; // Tên người nhận
-    address: string; // Địa chỉ giao hàng
-    phone?: string; // Tùy chọn, nếu có trong dữ liệu từ server
-    email?: string; // Tùy chọn
+    name: string;
+    address: string;
+    phone?: string;
+    email?: string;
 }
 
 const OrderHistoryPage: React.FC = () => {

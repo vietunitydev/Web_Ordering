@@ -21,25 +21,25 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
                 <div className="footer-section">
-                    <h3>Opening</h3>
+                    <h3>Mở cửa</h3>
                     <p>Mon-Fri: 09:00am-10:00pm</p>
                     <p>Sat-Sun: 09:00am-11:00pm</p>
                 </div>
                 <div className="footer-section">
-                    <h3>User Link</h3>
-                    <p>About Us</p>
-                    <p>Contact Us</p>
-                    <p>Oder Delivery</p>
-                    <p>Payment & Tex</p>
-                    <p>Terms of Services</p>
+                    <h3>Liên kết người dùng</h3>
+                    <p>Về chúng tôi</p>
+                    <p>Liên hệ với chúng tôi</p>
+                    <p>Giao hàng</p>
+                    <p>Thanh toán</p>
+                    <p>Chính sách</p>
                 </div>
                 <div className="footer-section">
-                    <h3>Contact Us</h3>
+                    <h3>Thông tin liên hệ</h3>
                     <p>100 Nguyen Xien</p>
                     <p>Thanh Xuan, Ha Noi</p>
                     <p>+0123 456 7891</p>
                     <div className="email-input">
-                        <input type="email" placeholder="Enter your email..." />
+                        <input type="email" placeholder="Nhập email của bạn..." />
                         <button type="submit">→</button>
                     </div>
                 </div>

@@ -132,7 +132,7 @@ const RegisterForm: React.FC = () => {
               <a href="#">Chính sách của EATNOW</a>.
             </p>
             <p>
-              Đã có tài khoản? <Link to="/">Đăng Nhập</Link>
+              Đã có tài khoản? <Link to="/login">Đăng Nhập</Link>
             </p>
           </form>
         </div>

@@ -23,7 +23,7 @@ const products: Product[] = [
 const ProductGrid = () => {
     return (
         <section className="product-grid">
-            <p>Product</p>
+            <p>Sản phẩm</p>
             <h2>Những món đặc ưa thích</h2>
             <div className="products-container">
                 {products.map((product) => (
@@ -46,7 +46,7 @@ const ProductGrid = () => {
                 ))}
             </div>
             <button className="see-more">
-                    <p>See More Product</p>
+                    <p>Xem nhiều sản phẩm hơn</p>
                     <div className="o"></div>
             </button>
         </section>
