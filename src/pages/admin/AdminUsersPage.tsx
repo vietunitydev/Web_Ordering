@@ -56,9 +56,6 @@ const AdminUsersPage: React.FC = () => {
     const handleDelete = async (userId: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
             try {
-
-                console.log(userId)
-
                 await axios.delete(`http://localhost:4999/api/users/${userId}`, {
                     headers: { Authorization: `Bearer ${state.token}` },
                 });
@@ -110,82 +107,74 @@ const AdminUsersPage: React.FC = () => {
                 {users.length === 0 ? (
                     <p className="no-users">Chưa có người dùng nào.</p>
                 ) : (
-                    <table className="users-table">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Address</th>
-                            <th>Role</th>
-                            <th>Action</th>
-                        </tr>
-                        <tr>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm tên"
-                                    value={searchTerms.name}
-                                    onChange={(e) => handleSearchChange('name', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm email"
-                                    value={searchTerms.email}
-                                    onChange={(e) => handleSearchChange('email', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm SĐT"
-                                    value={searchTerms.phone}
-                                    onChange={(e) => handleSearchChange('phone', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm địa chỉ"
-                                    value={searchTerms.address}
-                                    onChange={(e) => handleSearchChange('address', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm vai trò"
-                                    value={searchTerms.role}
-                                    onChange={(e) => handleSearchChange('role', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {filteredUsers.map((user) => (
-                            <tr key={user._id}>
-                                <td>{user.name}</td>
-                                <td>{user.email}</td>
-                                <td>{user.phone || 'N/A'}</td>
-                                <td>{user.address || 'N/A'}</td>
-                                <td>{user.role}</td>
-                                <td>
-                                    <button className="delete-btn" onClick={() => handleDelete(user._id)}>
-                                        Delete
-                                    </button>
-                                </td>
+                    <>
+                        <div className="search-form">
+                            <input
+                                type="text"
+                                placeholder="Tìm tên"
+                                value={searchTerms.name}
+                                onChange={(e) => handleSearchChange('name', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm email"
+                                value={searchTerms.email}
+                                onChange={(e) => handleSearchChange('email', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm SĐT"
+                                value={searchTerms.phone}
+                                onChange={(e) => handleSearchChange('phone', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm địa chỉ"
+                                value={searchTerms.address}
+                                onChange={(e) => handleSearchChange('address', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm vai trò"
+                                value={searchTerms.role}
+                                onChange={(e) => handleSearchChange('role', e.target.value)}
+                                className="search-input"
+                            />
+                        </div>
+
+                        <table className="users-table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Role</th>
+                                <th>Action</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {filteredUsers.map((user) => (
+                                <tr key={user._id}>
+                                    <td className="fixed-width name">{user.name}</td>
+                                    <td className="fixed-width">{user.email}</td>
+                                    <td className="fixed-width">{user.phone || 'N/A'}</td>
+                                    <td className="fixed-width address">{user.address || 'N/A'}</td>
+                                    <td className="fixed-width">{user.role}</td>
+                                    <td>
+                                        <button className="delete-btn" onClick={() => handleDelete(user._id)}>
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </>
                 )}
             </div>
         </AdminLayout>

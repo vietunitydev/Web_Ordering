@@ -105,130 +105,128 @@ const AdminOrdersPage: React.FC = () => {
                 {orders.length === 0 ? (
                     <p className="no-orders">Chưa có đơn hàng nào.</p>
                 ) : (
-                    <table className="orders-table">
-                        <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                            <th>Details</th>
-                        </tr>
-                        <tr>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm ID"
-                                    value={searchTerms._id}
-                                    onChange={(e) => handleSearchChange('_id', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm ngày"
-                                    value={searchTerms.createdAt}
-                                    onChange={(e) => handleSearchChange('createdAt', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm tên"
-                                    value={searchTerms.name}
-                                    onChange={(e) => handleSearchChange('name', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm tổng"
-                                    value={searchTerms.payment}
-                                    onChange={(e) => handleSearchChange('payment', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm trạng thái"
-                                    value={searchTerms.status}
-                                    onChange={(e) => handleSearchChange('status', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {filteredOrders.map((order) => (
-                            <React.Fragment key={order._id}>
-                                <tr>
-                                    <td>#{order._id}</td>
-                                    <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                                    <td>{order.name}</td>
-                                    <td>${order.payment.toFixed(2)}</td>
-                                    <td>{order.status}</td>
-                                    <td>
-                                        <select value={order.status} onChange={(e) => handleUpdateStatus(order._id, e.target.value)}>
-                                            <option value="pending">Đang chờ</option>
-                                            <option value="processing">Đang xử lý</option>
-                                            <option value="shipped">Đang giao</option>
-                                            <option value="delivered">Hoàn thành</option>
-                                            <option value="cancelled">Đã hủy</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button onClick={() => toggleOrderDetails(order._id)} className="details-btn">
-                                            {expandedOrderId === order._id ? 'Ẩn chi tiết' : 'Xem chi tiết'}
-                                        </button>
-                                    </td>
-                                </tr>
-                                {expandedOrderId === order._id && (
-                                    <tr className="order-details-row">
-                                        <td colSpan={7}>
-                                            <div className="order-details">
-                                                <h4>Chi tiết đơn hàng</h4>
-                                                <table className="order-items-table">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>Tên sản phẩm</th>
-                                                        <th>Giá</th>
-                                                        <th>Số lượng</th>
-                                                        <th>Tổng</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {order.items.map((item) => (
-                                                        <tr key={item.foodItemId._id}>
-                                                            <td>{item.foodItemId.title || 'Unknown'}</td>
-                                                            <td>${item.foodItemId.price?.toFixed(2) || '0.00'}</td>
-                                                            <td>{item.quantity}</td>
-                                                            <td>${((item.foodItemId.price || 0) * item.quantity).toFixed(2)}</td>
-                                                        </tr>
-                                                    ))}
-                                                    </tbody>
-                                                </table>
-                                                <div className="delivery-info">
-                                                    <h4>Thông tin giao hàng</h4>
-                                                    <p>Email: {order.email || 'N/A'}</p>
-                                                    <p>Địa chỉ: {order.address}</p>
-                                                    <p>Số điện thoại: {order.phone || 'N/A'}</p>
-                                                </div>
-                                            </div>
+                    <>
+                        <div className="search-form">
+                            <input
+                                type="text"
+                                placeholder="Tìm ID"
+                                value={searchTerms._id}
+                                onChange={(e) => handleSearchChange('_id', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm ngày"
+                                value={searchTerms.createdAt}
+                                onChange={(e) => handleSearchChange('createdAt', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm tên"
+                                value={searchTerms.name}
+                                onChange={(e) => handleSearchChange('name', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm tổng"
+                                value={searchTerms.payment}
+                                onChange={(e) => handleSearchChange('payment', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm trạng thái"
+                                value={searchTerms.status}
+                                onChange={(e) => handleSearchChange('status', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Tìm phương thức thanh toán"
+                                value={searchTerms.paymentMethod}
+                                onChange={(e) => handleSearchChange('paymentMethod', e.target.value)}
+                                className="search-input"
+                            />
+                        </div>
+
+                        <table className="orders-table">
+                            <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {filteredOrders.map((order) => (
+                                <React.Fragment key={order._id}>
+                                    <tr>
+                                        <td className="fixed-width">#{order._id}</td>
+                                        <td className="fixed-width">{new Date(order.createdAt).toLocaleDateString()}</td>
+                                        <td className="fixed-width customer">{order.name}</td>
+                                        <td className="fixed-width total">${order.payment.toFixed(2)}</td>
+                                        <td className="fixed-width">{order.status}</td>
+                                        <td>
+                                            <select value={order.status} onChange={(e) => handleUpdateStatus(order._id, e.target.value)}>
+                                                <option value="pending">Đang chờ</option>
+                                                <option value="processing">Đang xử lý</option>
+                                                <option value="shipped">Đang giao</option>
+                                                <option value="delivered">Hoàn thành</option>
+                                                <option value="cancelled">Đã hủy</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button onClick={() => toggleOrderDetails(order._id)} className="details-btn">
+                                                {expandedOrderId === order._id ? 'Ẩn chi tiết' : 'Xem chi tiết'}
+                                            </button>
                                         </td>
                                     </tr>
-                                )}
-                            </React.Fragment>
-                        ))}
-                        </tbody>
-                    </table>
+                                    {expandedOrderId === order._id && (
+                                        <tr className="order-details-row">
+                                            <td colSpan={7}>
+                                                <div className="order-details">
+                                                    <h4>Chi tiết đơn hàng</h4>
+                                                    <table className="order-items-table">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>Tên sản phẩm</th>
+                                                            <th>Giá</th>
+                                                            <th>Số lượng</th>
+                                                            <th>Tổng</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {order.items.map((item) => (
+                                                            <tr key={item.foodItemId._id}>
+                                                                <td>{item.foodItemId.title || 'Unknown'}</td>
+                                                                <td>${item.foodItemId.price?.toFixed(2) || '0.00'}</td>
+                                                                <td>{item.quantity}</td>
+                                                                <td>${((item.foodItemId.price || 0) * item.quantity).toFixed(2)}</td>
+                                                            </tr>
+                                                        ))}
+                                                        </tbody>
+                                                    </table>
+                                                    <div className="delivery-info">
+                                                        <h4>Thông tin giao hàng</h4>
+                                                        <p>Email: {order.email || 'N/A'}</p>
+                                                        <p>Địa chỉ: {order.address}</p>
+                                                        <p>Số điện thoại: {order.phone || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </React.Fragment>
+                            ))}
+                            </tbody>
+                        </table>
+                    </>
                 )}
             </div>
         </AdminLayout>

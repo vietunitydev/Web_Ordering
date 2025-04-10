@@ -1,26 +1,109 @@
 .admin-orders-page {
+    max-width: 100%;
     padding: 20px;
+    box-sizing: border-box;
+}
+
+.admin-orders-page h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.search-form {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 150px; /* Default width for search inputs */
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.no-orders {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
 }
 
 .orders-table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .orders-table th,
 .orders-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
+    padding: 12px;
     text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.orders-table th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.orders-table td {
+    color: #666;
+    vertical-align: middle;
+}
+
+/* Fixed widths for table columns */
+.fixed-width {
+    max-width: 100px; /* Narrower for most fields (Order ID, Date, Status) */
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fixed-width.customer, .fixed-width.total {
+    max-width: 200px; /* Wider for Customer and Total columns */
+    word-wrap: break-word; /* Allow wrapping for longer text */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Allow text to wrap instead of ellipsis */
+}
+
+.text-ellipsis {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .details-btn {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .details-btn:hover {
@@ -34,6 +117,7 @@
 .order-details {
     padding: 15px;
     background-color: #f9f9f9;
+    border-radius: 4px;
 }
 
 .order-items-table {
@@ -46,27 +130,75 @@
 .order-items-table td {
     padding: 8px;
     border: 1px solid #ddd;
+    text-align: left;
+}
+
+.order-items-table th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+    color: #333;
 }
 
 .delivery-info {
     margin-top: 15px;
-}
-
-.no-orders {
-    text-align: center;
-    color: #666;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .admin-orders-page {
+        padding: 10px;
+    }
+
+    .admin-orders-page h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .search-form {
+        gap: 5px;
+    }
+
+    .search-input {
+        width: 120px;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
     .orders-table th,
     .orders-table td {
         font-size: 12px;
         padding: 8px;
     }
 
-    .orders-table select {
+    .fixed-width {
+        max-width: 80px; /* Even narrower on mobile for most fields */
+    }
+
+    .fixed-width.customer, .fixed-width.total {
+        max-width: 150px; /* Still wider for Customer and Total on mobile */
+    }
+
+    .details-btn {
         font-size: 12px;
-        padding: 4px;
+        padding: 4px 8px;
+    }
+
+    .order-details {
+        padding: 10px;
+    }
+
+    .order-items-table th,
+    .order-items-table td {
+        font-size: 10px;
+        padding: 6px;
+    }
+
+    .no-orders {
+        font-size: 14px;
+        padding: 15px;
     }
 }

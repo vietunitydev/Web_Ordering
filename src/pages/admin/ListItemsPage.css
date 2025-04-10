@@ -1,5 +1,7 @@
 .list-items-page {
     max-width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .list-items-page h2 {
@@ -7,6 +9,30 @@
     font-weight: bold;
     color: #333;
     margin-bottom: 20px;
+    text-align: center;
+}
+
+.search-form {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 150px; /* Default width for search inputs */
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
 }
 
 .no-items {
@@ -14,11 +40,15 @@
     color: #666;
     text-align: center;
     padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
 }
 
 .items-table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .items-table th,
@@ -32,10 +62,37 @@
     background-color: #f1f1f1;
     font-weight: 600;
     color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .items-table td {
     color: #666;
+    vertical-align: middle;
+}
+
+/* Adjusted fixed widths for table cells */
+.fixed-width {
+    max-width: 100px; /* Narrower for most fields (ID, Name, Category, Price) */
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fixed-width.description {
+    max-width: 250px; /* Wider for Description column */
+    word-wrap: break-word; /* Allow wrapping for longer descriptions */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Allow text to wrap instead of ellipsis for Description */
+}
+
+.text-ellipsis {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .item-image {
@@ -43,14 +100,31 @@
     height: 50px;
     object-fit: cover;
     border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.update-btn, .save-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+}
+
+.update-btn:hover, .save-btn:hover {
+    background-color: #0056b3;
 }
 
 .delete-btn {
     background-color: #e74c3c;
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -60,12 +134,60 @@
     background-color: #c0392b;
 }
 
+/* Input Styling for Editing */
+.items-table input[type="text"],
+.items-table input[type="number"] {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.items-table input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.items-table input[type="number"]::-webkit-outer-spin-button,
+.items-table input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
+    .list-items-page {
+        padding: 10px;
+    }
+
+    .list-items-page h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .search-form {
+        gap: 5px;
+    }
+
+    .search-input {
+        width: 120px;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
     .items-table th,
     .items-table td {
         font-size: 12px;
         padding: 8px;
+    }
+
+    .fixed-width {
+        max-width: 80px; /* Even narrower on mobile for most fields */
+    }
+
+    .fixed-width.description {
+        max-width: 180px; /* Still wider for Description on mobile */
     }
 
     .item-image {
@@ -73,8 +195,13 @@
         height: 40px;
     }
 
-    .delete-btn {
+    .update-btn, .save-btn, .delete-btn {
         font-size: 12px;
         padding: 4px 8px;
+    }
+
+    .no-items {
+        font-size: 14px;
+        padding: 15px;
     }
 }

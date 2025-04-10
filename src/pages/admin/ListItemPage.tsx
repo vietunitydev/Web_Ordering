@@ -17,9 +17,12 @@ const ListItemsPage: React.FC = () => {
     const { state } = useAppContext();
     const [items, setItems] = useState<Item[]>([]);
     const [searchTerms, setSearchTerms] = useState({
+        id: '',
         title: '',
         description: '',
         type: '',
+        priceFrom: '',
+        priceTo: '',
     });
     const [editItemId, setEditItemId] = useState<string | null>(null);
     const [editData, setEditData] = useState<Partial<Item>>({});
@@ -60,7 +63,13 @@ const ListItemsPage: React.FC = () => {
     };
 
     const handleEditChange = (field: string, value: string | number) => {
-        setEditData((prev) => ({ ...prev, [field]: value }));
+        if (field === 'price' || field === 'priceFrom' || field === 'priceTo') {
+            const numericValue = parseFloat(value as string);
+            if (numericValue < 0) return; // Prevent negative numbers
+            setEditData((prev) => ({ ...prev, [field]: numericValue }));
+        } else {
+            setEditData((prev) => ({ ...prev, [field]: value }));
+        }
     };
 
     const handleSave = async (id: string) => {
@@ -83,19 +92,82 @@ const ListItemsPage: React.FC = () => {
     };
 
     const handleSearchChange = (field: string, value: string) => {
-        setSearchTerms((prev) => ({ ...prev, [field]: value }));
+        if (field === 'priceFrom' || field === 'priceTo') {
+            const numericValue = parseFloat(value);
+            if (numericValue < 0) return; // Prevent negative numbers in search
+            setSearchTerms((prev) => ({ ...prev, [field]: isNaN(numericValue) ? '' : value }));
+        } else {
+            setSearchTerms((prev) => ({ ...prev, [field]: value }));
+        }
     };
 
     const filteredItems = items.filter((item) =>
+        item._id.toLowerCase().includes(searchTerms.id.toLowerCase()) &&
         item.title.toLowerCase().includes(searchTerms.title.toLowerCase()) &&
         item.description.toLowerCase().includes(searchTerms.description.toLowerCase()) &&
-        item.type.toLowerCase().includes(searchTerms.type.toLowerCase())
+        item.type.toLowerCase().includes(searchTerms.type.toLowerCase()) &&
+        (!searchTerms.priceFrom || item.price >= parseFloat(searchTerms.priceFrom)) &&
+        (!searchTerms.priceTo || item.price <= parseFloat(searchTerms.priceTo))
     );
 
     return (
         <AdminLayout activePage="list-items">
             <div className="list-items-page">
                 <h2>All Food List</h2>
+
+                {/* New Search Form */}
+                <div className="search-form">
+                    <input
+                        type="text"
+                        placeholder="Tìm ID"
+                        value={searchTerms.id}
+                        onChange={(e) => handleSearchChange('id', e.target.value)}
+                        className="search-input"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Tìm tên"
+                        value={searchTerms.title}
+                        onChange={(e) => handleSearchChange('title', e.target.value)}
+                        className="search-input"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Tìm mô tả"
+                        value={searchTerms.description}
+                        onChange={(e) => handleSearchChange('description', e.target.value)}
+                        className="search-input"
+                    />
+                    <select
+                        value={searchTerms.type}
+                        onChange={(e) => handleSearchChange('type', e.target.value)}
+                        className="search-input"
+                    >
+                        <option value="">Tất cả danh mục</option>
+                        <option value="main">Món chính</option>
+                        <option value="dessert">Tráng miệng</option>
+                        <option value="fast-food">Đồ ăn nhanh</option>
+                        <option value="drink">Đồ uống</option>
+                        <option value="other">Khác</option>
+                    </select>
+                    <input
+                        type="number"
+                        placeholder="Giá từ"
+                        value={searchTerms.priceFrom}
+                        onChange={(e) => handleSearchChange('priceFrom', e.target.value)}
+                        className="search-input"
+                        min="0" // Prevent negative numbers in HTML
+                    />
+                    <input
+                        type="number"
+                        placeholder="Giá đến"
+                        value={searchTerms.priceTo}
+                        onChange={(e) => handleSearchChange('priceTo', e.target.value)}
+                        className="search-input"
+                        min="0" // Prevent negative numbers in HTML
+                    />
+                </div>
+
                 {items.length === 0 ? (
                     <p className="no-items">Chưa có sản phẩm nào.</p>
                 ) : (
@@ -109,38 +181,6 @@ const ListItemsPage: React.FC = () => {
                             <th>Price</th>
                             <th>Action</th>
                         </tr>
-                        <tr>
-                            <th></th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm tên"
-                                    value={searchTerms.title}
-                                    onChange={(e) => handleSearchChange('title', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm mô tả"
-                                    value={searchTerms.description}
-                                    onChange={(e) => handleSearchChange('description', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm danh mục"
-                                    value={searchTerms.type}
-                                    onChange={(e) => handleSearchChange('type', e.target.value)}
-                                    className="search-input"
-                                />
-                            </th>
-                            <th></th>
-                            <th></th>
-                        </tr>
                         </thead>
                         <tbody>
                         {filteredItems.map((item) => (
@@ -152,7 +192,7 @@ const ListItemsPage: React.FC = () => {
                                         'No Image'
                                     )}
                                 </td>
-                                <td>
+                                <td className="fixed-width">
                                     {editItemId === item._id ? (
                                         <input
                                             type="text"
@@ -160,10 +200,10 @@ const ListItemsPage: React.FC = () => {
                                             onChange={(e) => handleEditChange('title', e.target.value)}
                                         />
                                     ) : (
-                                        item.title
+                                        <span className="text-ellipsis">{item.title}</span>
                                     )}
                                 </td>
-                                <td>
+                                <td className="fixed-width">
                                     {editItemId === item._id ? (
                                         <input
                                             type="text"
@@ -171,10 +211,10 @@ const ListItemsPage: React.FC = () => {
                                             onChange={(e) => handleEditChange('description', e.target.value)}
                                         />
                                     ) : (
-                                        item.description
+                                        <span className="text-ellipsis">{item.description}</span>
                                     )}
                                 </td>
-                                <td>
+                                <td className="fixed-width">
                                     {editItemId === item._id ? (
                                         <input
                                             type="text"
@@ -182,15 +222,16 @@ const ListItemsPage: React.FC = () => {
                                             onChange={(e) => handleEditChange('type', e.target.value)}
                                         />
                                     ) : (
-                                        item.type
+                                        <span className="text-ellipsis">{item.type}</span>
                                     )}
                                 </td>
-                                <td>
+                                <td className="fixed-width">
                                     {editItemId === item._id ? (
                                         <input
                                             type="number"
                                             value={editData.price || 0}
                                             onChange={(e) => handleEditChange('price', parseFloat(e.target.value))}
+                                            min="0" // Prevent negative numbers in HTML
                                         />
                                     ) : (
                                         `$${item.price.toFixed(2)}`
