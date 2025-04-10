@@ -21,35 +21,37 @@ const AdminOrdersPage: React.FC = () => {
             }
 
             try {
-                const response = await fetch('http://localhost:4999/api/orders/all', {
+                const response = await axios.get('http://localhost:4999/api/orders/all', {
                     headers: { Authorization: `Bearer ${state.token}` },
                 });
 
-                if (!response.ok) {
+                if (!response) {
                     throw new Error('Failed to fetch orders');
                 }
 
-                const data = await response.json();
-                const formattedOrders: OrderItem[] = data.orders.map((order: any) => ({
-                    _id: order._id.toString(),
-                    userId: order.userId.toString(),
-                    name: order.name,
-                    address: order.address,
-                    email: order.email,
-                    phone: order.phone,
-                    status: order.status,
-                    shippingFee: order.shippingFee,
-                    totalAmount: order.totalAmount,
-                    payment: order.payment,
-                    paymentMethod: order.paymentMethod,
-                    discount: order.discount,
-                    items: order.items.map((item: any) => ({
-                        foodItem: item.foodItemId,
-                        quantity: item.quantity,
-                    })),
-                    createdAt: new Date(order.createdAt),
-                    updatedAt: new Date(order.updatedAt),
-                }));
+                // const data = await response.json();
+                // const formattedOrders: OrderItem[] = data.orders.map((order: any) => ({
+                //     _id: order._id.toString(),
+                //     userId: order.userId.toString(),
+                //     name: order.name,
+                //     address: order.address,
+                //     email: order.email,
+                //     phone: order.phone,
+                //     status: order.status,
+                //     shippingFee: order.shippingFee,
+                //     totalAmount: order.totalAmount,
+                //     payment: order.payment,
+                //     paymentMethod: order.paymentMethod,
+                //     discount: order.discount,
+                //     items: order.items.map((item: any) => ({
+                //         foodItem: item.foodItemId,
+                //         quantity: item.quantity,
+                //     })),
+                //     createdAt: new Date(order.createdAt),
+                //     updatedAt: new Date(order.updatedAt),
+                // }));
+
+                const formattedOrders: OrderItem[] = response.data.orders;
 
                 setOrders(formattedOrders);
             } catch (err) {
@@ -161,11 +163,11 @@ const AdminOrdersPage: React.FC = () => {
                                                     </thead>
                                                     <tbody>
                                                     {order.items.map((item) => (
-                                                        <tr key={item.foodItem._id}>
-                                                            <td>{item.foodItem.title || 'Unknown'}</td>
-                                                            <td>${item.foodItem.price?.toFixed(2) || '0.00'}</td>
+                                                        <tr key={item.foodItemId._id}>
+                                                            <td>{item.foodItemId.title || 'Unknown'}</td>
+                                                            <td>${item.foodItemId.price?.toFixed(2) || '0.00'}</td>
                                                             <td>{item.quantity}</td>
-                                                            <td>${((item.foodItem.price || 0) * item.quantity).toFixed(2)}</td>
+                                                            <td>${((item.foodItemId.price || 0) * item.quantity).toFixed(2)}</td>
                                                         </tr>
                                                     ))}
                                                     </tbody>

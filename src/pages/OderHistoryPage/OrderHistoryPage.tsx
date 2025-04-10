@@ -47,6 +47,9 @@ const OrderHistoryPage: React.FC = () => {
                 });
 
                 const fetchedOrders: Order[] = response.data.orders;
+
+                console.log("value " + JSON.stringify(response.data, null, 2));
+
                 setOrders(fetchedOrders);
             } catch (err) {
                 if (axios.isAxiosError(err)) {

@@ -63,7 +63,7 @@ export interface OrderItem {
     paymentMethod: string;
     discount: number;
     items: [{
-        foodItem: FoodItem;
+        foodItemId: FoodItem;
         quantity: number;
     }]
     createdAt: Date;
