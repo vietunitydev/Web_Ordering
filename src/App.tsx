@@ -44,7 +44,6 @@ const App: React.FC = () => {
                         <Route path="/login" element={<LoginForm />} />
                         <Route path="/register" element={<RegisterForm />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
-                        <Route path="/reset-password/:resettoken" element={<ResetPasswordForm />} />
                     </Route>
 
                     <Route path="/admin" element={<ProtectedRoute allowedRole="admin"><AddItemPage /></ProtectedRoute>} />
@@ -52,6 +51,9 @@ const App: React.FC = () => {
                     <Route path="/admin/list-items" element={<ProtectedRoute allowedRole="admin"><ListItemsPage /></ProtectedRoute>} />
                     <Route path="/admin/orders" element={<ProtectedRoute allowedRole="admin"><AdminOrdersPage /></ProtectedRoute>} />
                     <Route path="/admin/users" element={<ProtectedRoute allowedRole="admin"><AdminUsersPage /></ProtectedRoute>} />
+
+                    <Route path="/reset-password/:resettoken" element={<ResetPasswordForm />} />
+
                 </Routes>
             </AppProvider>
         </Router>

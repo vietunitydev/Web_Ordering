@@ -84,7 +84,7 @@ const ListItemsPage: React.FC = () => {
             );
             setItems(updatedItems);
             setEditItemId(null);
-            alert('Sản phẩm đã được cập nhật!');
+            // alert('Sản phẩm đã được cập nhật!');
         } catch (error) {
             console.error('Error updating food item:', error);
             alert('Lỗi khi cập nhật sản phẩm!');
@@ -239,17 +239,24 @@ const ListItemsPage: React.FC = () => {
                                 </td>
                                 <td>
                                     {editItemId === item._id ? (
-                                        <button onClick={() => handleSave(item._id)} className="save-btn">
-                                            Save
-                                        </button>
+                                        <div className="actions">
+                                            <button onClick={() => handleSave(item._id)} className="save-btn">
+                                                Save
+                                            </button>
+                                            <button className="delete-btn" onClick={() => handleDelete(item._id)}>
+                                                Delete
+                                            </button>
+                                        </div>
                                     ) : (
-                                        <button onClick={() => handleEdit(item)} className="update-btn">
-                                            Update
-                                        </button>
+                                        <div className="actions">
+                                            <button onClick={() => handleEdit(item)} className="update-btn">
+                                                Update
+                                            </button>
+                                            <button className="delete-btn" onClick={() => handleDelete(item._id)}>
+                                                Delete
+                                            </button>
+                                        </div>
                                     )}
-                                    <button className="delete-btn" onClick={() => handleDelete(item._id)}>
-                                        Delete
-                                    </button>
                                 </td>
                             </tr>
                         ))}
