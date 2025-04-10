@@ -11,6 +11,14 @@ const AdminOrdersPage: React.FC = () => {
     const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchTerms, setSearchTerms] = useState({
+        _id: '',
+        createdAt: '',
+        name: '',
+        payment: '',
+        status: '',
+        paymentMethod: '',
+    });
 
     useEffect(() => {
         const fetchOrderHistory = async () => {
@@ -25,34 +33,7 @@ const AdminOrdersPage: React.FC = () => {
                     headers: { Authorization: `Bearer ${state.token}` },
                 });
 
-                if (!response) {
-                    throw new Error('Failed to fetch orders');
-                }
-
-                // const data = await response.json();
-                // const formattedOrders: OrderItem[] = data.orders.map((order: any) => ({
-                //     _id: order._id.toString(),
-                //     userId: order.userId.toString(),
-                //     name: order.name,
-                //     address: order.address,
-                //     email: order.email,
-                //     phone: order.phone,
-                //     status: order.status,
-                //     shippingFee: order.shippingFee,
-                //     totalAmount: order.totalAmount,
-                //     payment: order.payment,
-                //     paymentMethod: order.paymentMethod,
-                //     discount: order.discount,
-                //     items: order.items.map((item: any) => ({
-                //         foodItem: item.foodItemId,
-                //         quantity: item.quantity,
-                //     })),
-                //     createdAt: new Date(order.createdAt),
-                //     updatedAt: new Date(order.updatedAt),
-                // }));
-
                 const formattedOrders: OrderItem[] = response.data.orders;
-
                 setOrders(formattedOrders);
             } catch (err) {
                 console.error('Error fetching order history:', err);
@@ -81,6 +62,19 @@ const AdminOrdersPage: React.FC = () => {
             console.error('Error updating order status:', error);
         }
     };
+
+    const handleSearchChange = (field: string, value: string) => {
+        setSearchTerms((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const filteredOrders = orders.filter((order) =>
+        order._id.toLowerCase().includes(searchTerms._id.toLowerCase()) &&
+        new Date(order.createdAt).toLocaleDateString().toLowerCase().includes(searchTerms.createdAt.toLowerCase()) &&
+        order.name.toLowerCase().includes(searchTerms.name.toLowerCase()) &&
+        order.payment.toString().includes(searchTerms.payment) &&
+        order.status.toLowerCase().includes(searchTerms.status.toLowerCase()) &&
+        order.paymentMethod.toLowerCase().includes(searchTerms.paymentMethod.toLowerCase())
+    );
 
     const toggleOrderDetails = (id: string) => {
         setExpandedOrderId(expandedOrderId === id ? null : id);
@@ -122,9 +116,58 @@ const AdminOrdersPage: React.FC = () => {
                             <th>Action</th>
                             <th>Details</th>
                         </tr>
+                        <tr>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm ID"
+                                    value={searchTerms._id}
+                                    onChange={(e) => handleSearchChange('_id', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm ngày"
+                                    value={searchTerms.createdAt}
+                                    onChange={(e) => handleSearchChange('createdAt', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm tên"
+                                    value={searchTerms.name}
+                                    onChange={(e) => handleSearchChange('name', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm tổng"
+                                    value={searchTerms.payment}
+                                    onChange={(e) => handleSearchChange('payment', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm trạng thái"
+                                    value={searchTerms.status}
+                                    onChange={(e) => handleSearchChange('status', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th></th>
+                            <th></th>
+                        </tr>
                         </thead>
                         <tbody>
-                        {orders.map((order) => (
+                        {filteredOrders.map((order) => (
                             <React.Fragment key={order._id}>
                                 <tr>
                                     <td>#{order._id}</td>

@@ -16,6 +16,13 @@ interface Item {
 const ListItemsPage: React.FC = () => {
     const { state } = useAppContext();
     const [items, setItems] = useState<Item[]>([]);
+    const [searchTerms, setSearchTerms] = useState({
+        title: '',
+        description: '',
+        type: '',
+    });
+    const [editItemId, setEditItemId] = useState<string | null>(null);
+    const [editData, setEditData] = useState<Partial<Item>>({});
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -47,6 +54,44 @@ const ListItemsPage: React.FC = () => {
         }
     };
 
+    const handleEdit = (item: Item) => {
+        setEditItemId(item._id);
+        setEditData({ ...item });
+    };
+
+    const handleEditChange = (field: string, value: string | number) => {
+        setEditData((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleSave = async (id: string) => {
+        try {
+            const response = await axios.put(
+                `http://localhost:4999/api/foodItems/${id}`,
+                editData,
+                { headers: { Authorization: `Bearer ${state.token}` } }
+            );
+            const updatedItems = items.map((item) =>
+                item._id === id ? response.data : item
+            );
+            setItems(updatedItems);
+            setEditItemId(null);
+            alert('Sản phẩm đã được cập nhật!');
+        } catch (error) {
+            console.error('Error updating food item:', error);
+            alert('Lỗi khi cập nhật sản phẩm!');
+        }
+    };
+
+    const handleSearchChange = (field: string, value: string) => {
+        setSearchTerms((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const filteredItems = items.filter((item) =>
+        item.title.toLowerCase().includes(searchTerms.title.toLowerCase()) &&
+        item.description.toLowerCase().includes(searchTerms.description.toLowerCase()) &&
+        item.type.toLowerCase().includes(searchTerms.type.toLowerCase())
+    );
+
     return (
         <AdminLayout activePage="list-items">
             <div className="list-items-page">
@@ -64,9 +109,41 @@ const ListItemsPage: React.FC = () => {
                             <th>Price</th>
                             <th>Action</th>
                         </tr>
+                        <tr>
+                            <th></th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm tên"
+                                    value={searchTerms.title}
+                                    onChange={(e) => handleSearchChange('title', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm mô tả"
+                                    value={searchTerms.description}
+                                    onChange={(e) => handleSearchChange('description', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm danh mục"
+                                    value={searchTerms.type}
+                                    onChange={(e) => handleSearchChange('type', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th></th>
+                            <th></th>
+                        </tr>
                         </thead>
                         <tbody>
-                        {items.map((item) => (
+                        {filteredItems.map((item) => (
                             <tr key={item._id}>
                                 <td>
                                     {item.imageURL ? (
@@ -75,11 +152,60 @@ const ListItemsPage: React.FC = () => {
                                         'No Image'
                                     )}
                                 </td>
-                                <td>{item.title}</td>
-                                <td>{item.description}</td>
-                                <td>{item.type}</td>
-                                <td>${item.price.toFixed(2)}</td>
                                 <td>
+                                    {editItemId === item._id ? (
+                                        <input
+                                            type="text"
+                                            value={editData.title || ''}
+                                            onChange={(e) => handleEditChange('title', e.target.value)}
+                                        />
+                                    ) : (
+                                        item.title
+                                    )}
+                                </td>
+                                <td>
+                                    {editItemId === item._id ? (
+                                        <input
+                                            type="text"
+                                            value={editData.description || ''}
+                                            onChange={(e) => handleEditChange('description', e.target.value)}
+                                        />
+                                    ) : (
+                                        item.description
+                                    )}
+                                </td>
+                                <td>
+                                    {editItemId === item._id ? (
+                                        <input
+                                            type="text"
+                                            value={editData.type || ''}
+                                            onChange={(e) => handleEditChange('type', e.target.value)}
+                                        />
+                                    ) : (
+                                        item.type
+                                    )}
+                                </td>
+                                <td>
+                                    {editItemId === item._id ? (
+                                        <input
+                                            type="number"
+                                            value={editData.price || 0}
+                                            onChange={(e) => handleEditChange('price', parseFloat(e.target.value))}
+                                        />
+                                    ) : (
+                                        `$${item.price.toFixed(2)}`
+                                    )}
+                                </td>
+                                <td>
+                                    {editItemId === item._id ? (
+                                        <button onClick={() => handleSave(item._id)} className="save-btn">
+                                            Save
+                                        </button>
+                                    ) : (
+                                        <button onClick={() => handleEdit(item)} className="update-btn">
+                                            Update
+                                        </button>
+                                    )}
                                     <button className="delete-btn" onClick={() => handleDelete(item._id)}>
                                         Delete
                                     </button>

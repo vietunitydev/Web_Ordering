@@ -3,12 +3,20 @@ import AdminLayout from './AdminLayout';
 import './AdminUsersPage.css';
 import { User } from "../../shared/types.ts";
 import { useAppContext } from '../../components/AppContext/AppContext.tsx';
+import axios from 'axios';
 
 const AdminUsersPage: React.FC = () => {
     const { state } = useAppContext();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchTerms, setSearchTerms] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        role: '',
+    });
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -19,16 +27,11 @@ const AdminUsersPage: React.FC = () => {
             }
 
             try {
-                const response = await fetch('http://localhost:4999/api/users/all', {
+                const response = await axios.get('http://localhost:4999/api/users/all', {
                     headers: { Authorization: `Bearer ${state.token}` },
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users');
-                }
-
-                const data = await response.json();
-                const formattedUsers: User[] = data.users.map((user: any) => ({
+                const formattedUsers: User[] = response.data.users.map((user: any) => ({
                     _id: user._id.toString(),
                     email: user.email,
                     name: user.name,
@@ -53,8 +56,10 @@ const AdminUsersPage: React.FC = () => {
     const handleDelete = async (userId: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
             try {
-                await fetch(`http://localhost:4999/api/users/${userId}`, {
-                    method: 'DELETE',
+
+                console.log(userId)
+
+                await axios.delete(`http://localhost:4999/api/users/${userId}`, {
                     headers: { Authorization: `Bearer ${state.token}` },
                 });
 
@@ -67,6 +72,18 @@ const AdminUsersPage: React.FC = () => {
             }
         }
     };
+
+    const handleSearchChange = (field: string, value: string) => {
+        setSearchTerms((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const filteredUsers = users.filter((user) =>
+        user.name.toLowerCase().includes(searchTerms.name.toLowerCase()) &&
+        user.email.toLowerCase().includes(searchTerms.email.toLowerCase()) &&
+        (user.phone || '').toLowerCase().includes(searchTerms.phone.toLowerCase()) &&
+        (user.address || '').toLowerCase().includes(searchTerms.address.toLowerCase()) &&
+        user.role.toLowerCase().includes(searchTerms.role.toLowerCase())
+    );
 
     if (loading) {
         return (
@@ -103,9 +120,57 @@ const AdminUsersPage: React.FC = () => {
                             <th>Role</th>
                             <th>Action</th>
                         </tr>
+                        <tr>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm tên"
+                                    value={searchTerms.name}
+                                    onChange={(e) => handleSearchChange('name', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm email"
+                                    value={searchTerms.email}
+                                    onChange={(e) => handleSearchChange('email', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm SĐT"
+                                    value={searchTerms.phone}
+                                    onChange={(e) => handleSearchChange('phone', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm địa chỉ"
+                                    value={searchTerms.address}
+                                    onChange={(e) => handleSearchChange('address', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm vai trò"
+                                    value={searchTerms.role}
+                                    onChange={(e) => handleSearchChange('role', e.target.value)}
+                                    className="search-input"
+                                />
+                            </th>
+                            <th></th>
+                        </tr>
                         </thead>
                         <tbody>
-                        {users.map((user) => (
+                        {filteredUsers.map((user) => (
                             <tr key={user._id}>
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
