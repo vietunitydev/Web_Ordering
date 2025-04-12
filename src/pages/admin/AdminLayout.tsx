@@ -5,6 +5,7 @@ import plus from '../../assets/plus.png';
 import item_lists from '../../assets/item_lists.png';
 import orders from '../../assets/orders.png';
 import users_icon from '../../assets/avatar_icon.png';
+import coupon_icon from '../../assets/coupon_icon.png';
 import { actions, useAppContext } from "../../components/AppContext/AppContext.tsx";
 
 const AdminLayout: React.FC<{ children: React.ReactNode; activePage: string }> = ({ children, activePage }) => {
@@ -60,6 +61,13 @@ const AdminLayout: React.FC<{ children: React.ReactNode; activePage: string }> =
                     >
                         <img src={users_icon} alt="Users" />
                         <p>Users</p>
+                    </button>
+                    <button
+                        className={`sidebar-btn ${activePage === 'coupons' ? 'active' : ''}`}
+                        onClick={() => navigate('/admin/coupons')}
+                    >
+                        <img src={coupon_icon} alt="Coupons" />
+                        <p>Coupons</p>
                     </button>
                 </div>
                 <div className="admin-main">{children}</div>

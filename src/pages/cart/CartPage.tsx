@@ -8,6 +8,8 @@ import { ContextCartItem } from "../../shared/types.ts";
 const CartPage: React.FC = () => {
     const { state, dispatch } = useAppContext();
     const [promoCode, setPromoCode] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [couponError, setCouponError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -57,18 +59,43 @@ const CartPage: React.FC = () => {
         }
     };
 
-    const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const deliveryFee = 2;
-    const total = subtotal + deliveryFee;
+    const handlePromoSubmit = async () => {
+        if (!promoCode) {
+            setCouponError('Vui lòng nhập mã giảm giá.');
+            return;
+        }
 
-    const handlePromoSubmit = () => {
-        alert(`Promo code "${promoCode}" applied (placeholder)`);
-        setPromoCode('');
+        try {
+            const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const response = await axios.post(
+                'http://localhost:4999/api/coupons/apply',
+                { code: promoCode, orderTotal: subtotal },
+                { headers: { Authorization: `Bearer ${state.token}` } }
+            );
+
+            if (response.data.success) {
+                setDiscount(response.data.data.discountAmount);
+                setCouponError(null);
+                alert(`Mã giảm giá "${promoCode}" đã được áp dụng! Giảm: $${response.data.data.discountAmount.toFixed(2)}`);
+                setPromoCode(''); // Xóa mã sau khi áp dụng thành công
+            } else {
+                setCouponError(response.data.message || 'Mã giảm giá không hợp lệ.');
+            }
+        } catch (error: any) {
+            console.error('Error applying coupon:', error);
+            setCouponError(error.response?.data?.message || 'Lỗi khi áp dụng mã giảm giá. Vui lòng thử lại.');
+        }
     };
 
     const handleCheckout = () => {
+        // Lưu discount vào localStorage để sử dụng ở CheckoutPage
+        localStorage.setItem('cartDiscount', discount.toString());
         navigate('/checkout');
     };
+
+    const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const deliveryFee = 2;
+    const total = subtotal + deliveryFee - discount;
 
     if (state.role !== 'user') {
         return <div>Bạn không có quyền truy cập trang này.</div>;
@@ -144,6 +171,10 @@ const CartPage: React.FC = () => {
                                 <span>Phí giao hàng</span>
                                 <span>${deliveryFee.toFixed(2)}</span>
                             </div>
+                            <div className="summary-row">
+                                <span>Giảm giá</span>
+                                <span>${discount.toFixed(2)}</span>
+                            </div>
                             <div className="summary-row total">
                                 <span>Tổng</span>
                                 <span>${total.toFixed(2)}</span>
@@ -158,12 +189,13 @@ const CartPage: React.FC = () => {
                                 <div className="promo-input">
                                     <input
                                         type="text"
-                                        placeholder="Promo code"
+                                        placeholder="Mã giảm giá"
                                         value={promoCode}
                                         onChange={(e) => setPromoCode(e.target.value)}
                                     />
                                     <button onClick={handlePromoSubmit}>Xác nhận</button>
                                 </div>
+                                {couponError && <p className="error-message">{couponError}</p>}
                             </div>
                         </div>
                     </div>

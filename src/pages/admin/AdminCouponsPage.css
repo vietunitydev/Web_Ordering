@@ -1,0 +1,98 @@
+.admin-coupons-page {
+    padding: 20px;
+}
+
+.coupons-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.coupons-table th,
+.coupons-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.coupons-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.search-input {
+    max-width: 150px;
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.coupon-form {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.coupon-form .form-group {
+    margin-bottom: 15px;
+}
+
+.coupon-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.coupon-form input,
+.coupon-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.save-btn,
+.update-btn,
+.delete-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+}
+
+.save-btn:hover,
+.update-btn:hover {
+    background-color: #2980b9;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.no-coupons {
+    text-align: center;
+    color: #888;
+    margin-top: 20px;
+}
+
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    margin-bottom: 20px;
+}

@@ -25,7 +25,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
-    width: 150px; /* Default width for search inputs */
+    width: 150px;
     box-sizing: border-box;
     transition: border-color 0.3s ease;
 }
@@ -73,7 +73,7 @@
 
 /* Adjusted fixed widths for table cells */
 .fixed-width {
-    max-width: 100px; /* Narrower for most fields (ID, Name, Category, Price) */
+    max-width: 100px;
     word-wrap: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -81,11 +81,11 @@
 }
 
 .fixed-width.description {
-    max-width: 250px; /* Wider for Description column */
-    word-wrap: break-word; /* Allow wrapping for longer descriptions */
+    max-width: 250px;
+    word-wrap: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal; /* Allow text to wrap instead of ellipsis for Description */
+    white-space: normal;
 }
 
 .text-ellipsis {
@@ -103,7 +103,10 @@
     border: 1px solid #ddd;
 }
 
-.update-btn, .save-btn {
+/* Button Styling with Explicit Width Control */
+.update-btn,
+.save-btn,
+.delete-btn {
     background-color: #007bff;
     color: white;
     border: none;
@@ -112,26 +115,36 @@
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 80px; /* Explicit width to prevent stretching */
+    text-align: center;
+    display: inline-block; /* Ensure buttons stay inline */
     margin-right: 5px;
+    box-sizing: border-box;
 }
 
-.update-btn:hover, .save-btn:hover {
+.save-btn {
+    background-color: #007bff; /* Ensure Save matches Update */
+}
+
+.update-btn:hover,
+.save-btn:hover {
     background-color: #0056b3;
 }
 
 .delete-btn {
     background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    width: 80px; /* Match other buttons */
 }
 
 .delete-btn:hover {
     background-color: #c0392b;
+}
+
+/* Ensure button container handles multiple buttons */
+.items-table td.actions {
+    white-space: nowrap; /* Prevent wrapping of buttons */
+    display: flex;
+    gap: 5px; /* Space between buttons */
 }
 
 /* Input Styling for Editing */
@@ -183,11 +196,11 @@
     }
 
     .fixed-width {
-        max-width: 80px; /* Even narrower on mobile for most fields */
+        max-width: 80px;
     }
 
     .fixed-width.description {
-        max-width: 180px; /* Still wider for Description on mobile */
+        max-width: 180px;
     }
 
     .item-image {
@@ -195,9 +208,16 @@
         height: 40px;
     }
 
-    .update-btn, .save-btn, .delete-btn {
+    .update-btn,
+    .save-btn,
+    .delete-btn {
         font-size: 12px;
         padding: 4px 8px;
+        width: 60px; /* Adjust width on mobile */
+    }
+
+    .items-table td.actions {
+        gap: 3px;
     }
 
     .no-items {

@@ -13,11 +13,12 @@ const AdminOrdersPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [searchTerms, setSearchTerms] = useState({
         _id: '',
-        createdAt: '',
+        createdAtFrom: '', // From date
+        createdAtTo: '',   // To date
         name: '',
         payment: '',
         status: '',
-        paymentMethod: '',
+        paymentMethod: '', // Will hold the selected payment method
     });
 
     useEffect(() => {
@@ -67,14 +68,21 @@ const AdminOrdersPage: React.FC = () => {
         setSearchTerms((prev) => ({ ...prev, [field]: value }));
     };
 
-    const filteredOrders = orders.filter((order) =>
-        order._id.toLowerCase().includes(searchTerms._id.toLowerCase()) &&
-        new Date(order.createdAt).toLocaleDateString().toLowerCase().includes(searchTerms.createdAt.toLowerCase()) &&
-        order.name.toLowerCase().includes(searchTerms.name.toLowerCase()) &&
-        order.payment.toString().includes(searchTerms.payment) &&
-        order.status.toLowerCase().includes(searchTerms.status.toLowerCase()) &&
-        order.paymentMethod.toLowerCase().includes(searchTerms.paymentMethod.toLowerCase())
-    );
+    const filteredOrders = orders.filter((order) => {
+        const createdAtDate = new Date(order.createdAt);
+        const fromDate = searchTerms.createdAtFrom ? new Date(searchTerms.createdAtFrom) : null;
+        const toDate = searchTerms.createdAtTo ? new Date(searchTerms.createdAtTo) : null;
+
+        return (
+            order._id.toLowerCase().includes(searchTerms._id.toLowerCase()) &&
+            (!fromDate || !isNaN(fromDate.getTime()) && createdAtDate >= fromDate) &&
+            (!toDate || !isNaN(toDate.getTime()) && createdAtDate <= toDate) &&
+            order.name.toLowerCase().includes(searchTerms.name.toLowerCase()) &&
+            order.payment.toString().includes(searchTerms.payment) &&
+            (searchTerms.status === '' || order.status.toLowerCase().includes(searchTerms.status.toLowerCase())) &&
+            (searchTerms.paymentMethod === '' || order.paymentMethod.toLowerCase().includes(searchTerms.paymentMethod.toLowerCase()))
+        );
+    });
 
     const toggleOrderDetails = (id: string) => {
         setExpandedOrderId(expandedOrderId === id ? null : id);
@@ -115,10 +123,15 @@ const AdminOrdersPage: React.FC = () => {
                                 className="search-input"
                             />
                             <input
-                                type="text"
-                                placeholder="Tìm ngày"
-                                value={searchTerms.createdAt}
-                                onChange={(e) => handleSearchChange('createdAt', e.target.value)}
+                                type="date"
+                                value={searchTerms.createdAtFrom}
+                                onChange={(e) => handleSearchChange('createdAtFrom', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="date"
+                                value={searchTerms.createdAtTo}
+                                onChange={(e) => handleSearchChange('createdAtTo', e.target.value)}
                                 className="search-input"
                             />
                             <input
@@ -135,20 +148,29 @@ const AdminOrdersPage: React.FC = () => {
                                 onChange={(e) => handleSearchChange('payment', e.target.value)}
                                 className="search-input"
                             />
-                            <input
-                                type="text"
-                                placeholder="Tìm trạng thái"
+                            <select
                                 value={searchTerms.status}
                                 onChange={(e) => handleSearchChange('status', e.target.value)}
                                 className="search-input"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Tìm phương thức thanh toán"
+                            >
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="pending">Đang chờ</option>
+                                <option value="processing">Đang xử lý</option>
+                                <option value="shipped">Đang giao</option>
+                                <option value="delivered">Hoàn thành</option>
+                                <option value="cancelled">Đã hủy</option>
+                            </select>
+                            <select
                                 value={searchTerms.paymentMethod}
                                 onChange={(e) => handleSearchChange('paymentMethod', e.target.value)}
                                 className="search-input"
-                            />
+                            >
+                                <option value="">Tất cả phương thức</option>
+                                <option value="Credit Card">Thẻ tín dụng</option>
+                                <option value="Cash">Tiền mặt</option>
+                                <option value="PayPal">PayPal</option>
+                                {/* Add more payment methods as needed */}
+                            </select>
                         </div>
 
                         <table className="orders-table">

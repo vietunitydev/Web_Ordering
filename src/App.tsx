@@ -16,6 +16,7 @@ import { AppProvider, useAppContext } from "./components/AppContext/AppContext.t
 import AdminUsersPage from "./pages/admin/AdminUsersPage.tsx";
 import ResetPasswordForm from "./pages/login/ResetPasswordForm.tsx";
 import ForgotPassword from "./pages/login/ForgotPassword.tsx";
+import AdminCouponsPage from "./pages/admin/AdminCouponsPage.tsx";
 
 const ProtectedRoute: React.FC<{ children: JSX.Element; allowedRole: string }> = ({ children, allowedRole }) => {
     const { state } = useAppContext();
@@ -51,6 +52,7 @@ const App: React.FC = () => {
                     <Route path="/admin/list-items" element={<ProtectedRoute allowedRole="admin"><ListItemsPage /></ProtectedRoute>} />
                     <Route path="/admin/orders" element={<ProtectedRoute allowedRole="admin"><AdminOrdersPage /></ProtectedRoute>} />
                     <Route path="/admin/users" element={<ProtectedRoute allowedRole="admin"><AdminUsersPage /></ProtectedRoute>} />
+                    <Route path="/admin/coupons" element={<ProtectedRoute allowedRole="admin"><AdminCouponsPage /></ProtectedRoute>} />
 
                     <Route path="/reset-password/:resettoken" element={<ResetPasswordForm />} />
 
