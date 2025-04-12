@@ -5,6 +5,8 @@ interface AppState {
     cart: ContextCartItem[];
     token: string | null;
     role: string | null;
+    discount: number;
+    appliedPromoCode: string | null;
 }
 
 interface AppContextType {
@@ -16,6 +18,8 @@ const initialState: AppState = {
     cart: [],
     token: null,
     role: null,
+    discount: 0,
+    appliedPromoCode: null,
 };
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -28,6 +32,8 @@ export const actionTypes = {
     UPDATE_QUANTITY: 'UPDATE_QUANTITY',
     REMOVE_FROM_CART: 'REMOVE_FROM_CART',
     CLEAR_CART: 'CLEAR_CART',
+    SET_DISCOUNT: 'SET_DISCOUNT', // Action mới để lưu discount
+    CLEAR_DISCOUNT: 'CLEAR_DISCOUNT', // Action mới để xóa discount
 };
 
 const appReducer = (state: AppState, action: any): AppState => {
@@ -35,7 +41,7 @@ const appReducer = (state: AppState, action: any): AppState => {
         case actionTypes.LOGIN:
             return { ...state, token: action.payload.token, role: action.payload.role };
         case actionTypes.LOGOUT:
-            return { ...state, token: null, role: null, cart: [] };
+            return { ...state, token: null, role: null, cart: [], discount: 0, appliedPromoCode: null };
         case actionTypes.ADD_TO_CART:
             const existingItem = state.cart.find((item) => item.id === action.payload.id);
             if (existingItem) {
@@ -65,7 +71,15 @@ const appReducer = (state: AppState, action: any): AppState => {
                 cart: state.cart.filter((item) => item.id !== action.payload.id),
             };
         case actionTypes.CLEAR_CART:
-            return { ...state, cart: [] };
+            return { ...state, cart: [], discount: 0, appliedPromoCode: null }; // Xóa discount khi xóa giỏ hàng
+        case actionTypes.SET_DISCOUNT:
+            return {
+                ...state,
+                discount: action.payload.discount,
+                appliedPromoCode: action.payload.promoCode,
+            };
+        case actionTypes.CLEAR_DISCOUNT:
+            return { ...state, discount: 0, appliedPromoCode: null };
         default:
             return state;
     }
@@ -77,7 +91,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return {
             cart: [],
             token: savedToken,
-            role: null, // Role sẽ được lấy từ server sau khi đăng nhập
+            role: null,
+            discount: 0,
+            appliedPromoCode: null,
         };
     });
 

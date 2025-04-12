@@ -44,16 +44,12 @@ const CheckoutPage: React.FC = () => {
                 });
             } catch (error) {
                 console.error('Error fetching cart or user data:', error);
-                alert('Failed to load cart or user data. Please try again.');
+                alert('Không thể tải giỏ hàng hoặc thông tin người dùng.');
             }
         };
 
         if (state.token && state.role === 'user') fetchCart();
     }, [navigate, state.token, state.role]);
-
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const deliveryFee = 2;
-    const total = subtotal + deliveryFee;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -70,32 +66,42 @@ const CheckoutPage: React.FC = () => {
         }
 
         try {
+            const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const deliveryFee = 2;
+            const total = subtotal + deliveryFee - state.discount;
+
             const orderData = {
                 name: formData.firstName,
                 address: formData.address,
                 email: formData.email,
                 phone: formData.phone,
                 shippingFee: deliveryFee,
-                totalAmount: subtotal + deliveryFee,
-                payment: subtotal,
+                totalAmount: total,
+                payment: total,
                 paymentMethod: 'cash',
-                discount: 0.0,
-                items: cart.map(item => ({
+                discount: state.discount,
+                items: cart.map((item) => ({
                     foodItemId: item.id,
-                    quantity: item.quantity
-                }))
+                    quantity: item.quantity,
+                })),
+                // promoCode: state.appliedPromoCode,
             };
 
+            console.log(orderData);
+
             const response = await axios.post('http://localhost:4999/api/orders/create', orderData, {
-                headers: { Authorization: `Bearer ${state.token}` }
+                headers: { Authorization: `Bearer ${state.token}` },
             });
 
             if (response) {
+                console.log("success");
+
                 await axios.delete('http://localhost:4999/api/carts/clear', {
-                    headers: { Authorization: `Bearer ${state.token}` }
+                    headers: { Authorization: `Bearer ${state.token}` },
                 });
                 dispatch({ type: actions.CLEAR_CART });
-                alert('Order placed successfully! You can view order history in the "Order History" page.');
+                dispatch({ type: actions.CLEAR_DISCOUNT });
+                alert('Đặt hàng thành công! Bạn có thể xem lịch sử đơn hàng ở trang "Order History".');
                 navigate('/order-history');
             }
         } catch (error) {
@@ -107,6 +113,10 @@ const CheckoutPage: React.FC = () => {
     if (state.role !== 'user') {
         return <div>Bạn không có quyền truy cập trang này.</div>;
     }
+
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const deliveryFee = 2;
+    const total = subtotal + deliveryFee - state.discount;
 
     return (
         <div className="checkout-page">
@@ -121,6 +131,7 @@ const CheckoutPage: React.FC = () => {
                             value={formData.firstName}
                             onChange={handleInputChange}
                             className="form-input"
+                            required
                         />
                     </div>
                     <input
@@ -130,6 +141,7 @@ const CheckoutPage: React.FC = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         className="form-input"
+                        required
                     />
                     <input
                         type="text"
@@ -138,6 +150,7 @@ const CheckoutPage: React.FC = () => {
                         value={formData.address}
                         onChange={handleInputChange}
                         className="form-input"
+                        required
                     />
                     <input
                         type="tel"
@@ -146,6 +159,7 @@ const CheckoutPage: React.FC = () => {
                         value={formData.phone}
                         onChange={handleInputChange}
                         className="form-input"
+                        required
                     />
                 </div>
 
@@ -159,11 +173,21 @@ const CheckoutPage: React.FC = () => {
                         <span>Delivery fee</span>
                         <span>${deliveryFee.toFixed(2)}</span>
                     </div>
+                    {state.discount > 0 && (
+                        <div className="summary-row">
+                            <span>Discount ({state.appliedPromoCode})</span>
+                            <span>-${state.discount.toFixed(2)}</span>
+                        </div>
+                    )}
                     <div className="summary-row total">
                         <span>Total</span>
                         <span>${total.toFixed(2)}</span>
                     </div>
-                    <button onClick={handleProceedToPayment} className="payment-button">
+                    <button
+                        onClick={handleProceedToPayment}
+                        className="payment-button"
+                        disabled={cart.length === 0}
+                    >
                         Proceed to Payment
                     </button>
                 </div>

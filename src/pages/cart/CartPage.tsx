@@ -3,18 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext, actions } from '../../components/AppContext/AppContext.tsx';
 import axios from 'axios';
 import './CartPage.css';
-import { ContextCartItem } from "../../shared/types.ts";
+import { ContextCartItem } from '../../shared/types.ts';
 
 const CartPage: React.FC = () => {
     const { state, dispatch } = useAppContext();
     const [promoCode, setPromoCode] = useState('');
-    const [discount, setDiscount] = useState(0);
     const [couponError, setCouponError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCart = async () => {
-            if (state.role !== 'user') return;
+            if (state.role !== 'user') {
+                alert('Bạn không có quyền truy cập trang này.');
+                navigate('/login');
+                return;
+            }
             try {
                 const response = await axios.get('http://localhost:4999/api/carts/my-cart', {
                     headers: { Authorization: `Bearer ${state.token}` },
@@ -29,10 +32,11 @@ const CartPage: React.FC = () => {
                 dispatch({ type: actions.SET_CART, payload: cartItems });
             } catch (error) {
                 console.error('Lỗi khi lấy giỏ hàng:', error);
+                setCouponError('Lỗi khi lấy giỏ hàng.');
             }
         };
         if (state.token && state.role === 'user') fetchCart();
-    }, [dispatch, state.token, state.role]);
+    }, [dispatch, state.token, state.role, navigate]);
 
     const updateQuantityLocally = (id: string, newQuantity: number) => {
         if (isNaN(newQuantity) || newQuantity < 1) return;
@@ -55,13 +59,18 @@ const CartPage: React.FC = () => {
             alert('Giỏ hàng đã được cập nhật trên server!');
         } catch (error) {
             console.error('Lỗi khi cập nhật giỏ hàng:', error);
-            alert('Lỗi khi cập nhật giỏ hàng!');
+            setCouponError('Lỗi khi cập nhật giỏ hàng.');
         }
     };
 
     const handlePromoSubmit = async () => {
         if (!promoCode) {
             setCouponError('Vui lòng nhập mã giảm giá.');
+            return;
+        }
+
+        if (state.appliedPromoCode) {
+            setCouponError(`Mã "${state.appliedPromoCode}" đã được áp dụng. Xóa mã để thử mã khác.`);
             return;
         }
 
@@ -74,28 +83,34 @@ const CartPage: React.FC = () => {
             );
 
             if (response.data.success) {
-                setDiscount(response.data.data.discountAmount);
+                dispatch({
+                    type: actions.SET_DISCOUNT,
+                    payload: { discount: response.data.data.discountAmount, promoCode },
+                });
                 setCouponError(null);
                 alert(`Mã giảm giá "${promoCode}" đã được áp dụng! Giảm: $${response.data.data.discountAmount.toFixed(2)}`);
-                setPromoCode(''); // Xóa mã sau khi áp dụng thành công
+                setPromoCode('');
             } else {
                 setCouponError(response.data.message || 'Mã giảm giá không hợp lệ.');
             }
         } catch (error: any) {
             console.error('Error applying coupon:', error);
-            setCouponError(error.response?.data?.message || 'Lỗi khi áp dụng mã giảm giá. Vui lòng thử lại.');
+            setCouponError(error.response?.data?.message || 'Lỗi khi áp dụng mã giảm giá.');
         }
     };
 
+    const handleClearPromo = () => {
+        dispatch({ type: actions.CLEAR_DISCOUNT });
+        setCouponError(null);
+    };
+
     const handleCheckout = () => {
-        // Lưu discount vào localStorage để sử dụng ở CheckoutPage
-        localStorage.setItem('cartDiscount', discount.toString());
         navigate('/checkout');
     };
 
     const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const deliveryFee = 2;
-    const total = subtotal + deliveryFee - discount;
+    const total = subtotal + deliveryFee - state.discount;
 
     if (state.role !== 'user') {
         return <div>Bạn không có quyền truy cập trang này.</div>;
@@ -171,10 +186,12 @@ const CartPage: React.FC = () => {
                                 <span>Phí giao hàng</span>
                                 <span>${deliveryFee.toFixed(2)}</span>
                             </div>
-                            <div className="summary-row">
-                                <span>Giảm giá</span>
-                                <span>${discount.toFixed(2)}</span>
-                            </div>
+                            {state.discount > 0 && (
+                                <div className="summary-row">
+                                    <span>Giảm giá ({state.appliedPromoCode})</span>
+                                    <span>-${state.discount.toFixed(2)}</span>
+                                </div>
+                            )}
                             <div className="summary-row total">
                                 <span>Tổng</span>
                                 <span>${total.toFixed(2)}</span>
@@ -192,8 +209,13 @@ const CartPage: React.FC = () => {
                                         placeholder="Mã giảm giá"
                                         value={promoCode}
                                         onChange={(e) => setPromoCode(e.target.value)}
+                                        disabled={!!state.appliedPromoCode}
                                     />
-                                    <button onClick={handlePromoSubmit}>Xác nhận</button>
+                                    {!state.appliedPromoCode ? (
+                                        <button onClick={handlePromoSubmit}>Xác nhận</button>
+                                    ) : (
+                                        <button onClick={handleClearPromo}>Xóa mã</button>
+                                    )}
                                 </div>
                                 {couponError && <p className="error-message">{couponError}</p>}
                             </div>
