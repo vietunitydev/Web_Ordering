@@ -198,7 +198,7 @@ const ProfilePage: React.FC = () => {
                                     </button>
                                 </div>
                             </div>
-                            <button type="submit" className="save-btn">Lưu thay đổi</button>
+                            <button type="submit" className="save-btn">Lưu</button>
                         </form>
                     </>
                 )}
@@ -220,7 +220,7 @@ const ProfilePage: React.FC = () => {
                                 <label>Xác nhận mật khẩu mới</label>
                                 <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                             </div>
-                            <button type="submit" className="save-btn">Xác nhận đổi mật khẩu</button>
+                            <button type="submit" className="save-btn">Xác nhận</button>
                             <button type="button" className="cancel-btn" onClick={togglePasswordForm}>Hủy</button>
                         </form>
                     </div>
