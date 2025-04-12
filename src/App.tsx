@@ -1,25 +1,28 @@
-import React, {JSX} from 'react';
+import React, { JSX } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from "./pages/Layout/Layout.tsx";
-import FoodPage from "./pages/food/FoodPage.tsx";
-import CartPage from "./pages/cart/CartPage.tsx";
-import LoginForm from "./pages/login/LoginForm.tsx";
-import RegisterForm from "./pages/login/RegisterForm.tsx";
-import Home from "./pages/home/Home.tsx";
-import ProfilePage from "./pages/profile/ProfilePage.tsx";
-import CheckoutPage from "./pages/CheckoutPage/CheckoutPage.tsx";
-import OrderHistoryPage from "./pages/OderHistoryPage/OrderHistoryPage.tsx";
-import AddItemPage from "./pages/admin/AddItemPage.tsx";
-import ListItemsPage from "./pages/admin/ListItemPage.tsx";
-import AdminOrdersPage from "./pages/admin/AdminOrderPage.tsx";
-import { AppProvider, useAppContext } from "./components/AppContext/AppContext.tsx";
-import AdminUsersPage from "./pages/admin/AdminUsersPage.tsx";
-import ResetPasswordForm from "./pages/login/ResetPasswordForm.tsx";
-import ForgotPassword from "./pages/login/ForgotPassword.tsx";
-import AdminCouponsPage from "./pages/admin/AdminCouponsPage.tsx";
+import Layout from './pages/Layout/Layout.tsx';
+import FoodPage from './pages/food/FoodPage.tsx';
+import CartPage from './pages/cart/CartPage.tsx';
+import LoginForm from './pages/login/LoginForm.tsx';
+import RegisterForm from './pages/login/RegisterForm.tsx';
+import Home from './pages/home/Home.tsx';
+import ProfilePage from './pages/profile/ProfilePage.tsx';
+import CheckoutPage from './pages/CheckoutPage/CheckoutPage.tsx';
+import OrderHistoryPage from './pages/OderHistoryPage/OrderHistoryPage.tsx';
+import AddItemPage from './pages/admin/AddItemPage.tsx';
+import ListItemsPage from './pages/admin/ListItemPage.tsx';
+import AdminOrdersPage from './pages/admin/AdminOrderPage.tsx';
+import { AppProvider, useAppContext } from './components/AppContext/AppContext.tsx';
+import AdminUsersPage from './pages/admin/AdminUsersPage.tsx';
+import ResetPasswordForm from './pages/login/ResetPasswordForm.tsx';
+import ForgotPassword from './pages/login/ForgotPassword.tsx';
+import AdminCouponsPage from './pages/admin/AdminCouponsPage.tsx';
 
 const ProtectedRoute: React.FC<{ children: JSX.Element; allowedRole: string }> = ({ children, allowedRole }) => {
     const { state } = useAppContext();
+    if (state.isLoading) {
+        return <div>Đang xác thực...</div>;
+    }
     if (!state.token) {
         return <Navigate to="/login" replace />;
     }
@@ -41,6 +44,7 @@ const App: React.FC = () => {
                         <Route path="/cart" element={<ProtectedRoute allowedRole="user"><CartPage /></ProtectedRoute>} />
                         <Route path="/profile" element={<ProtectedRoute allowedRole="user"><ProfilePage /></ProtectedRoute>} />
                         <Route path="/checkout" element={<ProtectedRoute allowedRole="user"><CheckoutPage /></ProtectedRoute>} />
+                        <Route path="/checkout/success" element={<ProtectedRoute allowedRole="user"><CheckoutPage /></ProtectedRoute>} />
                         <Route path="/order-history" element={<ProtectedRoute allowedRole="user"><OrderHistoryPage /></ProtectedRoute>} />
                         <Route path="/login" element={<LoginForm />} />
                         <Route path="/register" element={<RegisterForm />} />
@@ -55,7 +59,6 @@ const App: React.FC = () => {
                     <Route path="/admin/coupons" element={<ProtectedRoute allowedRole="admin"><AdminCouponsPage /></ProtectedRoute>} />
 
                     <Route path="/reset-password/:resettoken" element={<ResetPasswordForm />} />
-
                 </Routes>
             </AppProvider>
         </Router>

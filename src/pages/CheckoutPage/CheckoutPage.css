@@ -92,6 +92,22 @@
     background-color: #d81b60;
 }
 
+.loading {
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+    padding: 20px;
+}
+
+.error-message {
+    text-align: center;
+    color: #f44336;
+    font-size: 16px;
+    padding: 20px;
+    background-color: #ffebee;
+    border-radius: 4px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .checkout-container {

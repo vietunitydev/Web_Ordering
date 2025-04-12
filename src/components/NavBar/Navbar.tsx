@@ -14,6 +14,7 @@ const Navbar: React.FC = () => {
     const totalItems = getTotalItems(state.cart);
 
     const handleLogout = () => {
+        localStorage.removeItem('token');
         dispatch({ type: actions.LOGOUT });
         setShowDropdown(false);
         navigate('/home');

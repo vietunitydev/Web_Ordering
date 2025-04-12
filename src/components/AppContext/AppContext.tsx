@@ -7,6 +7,7 @@ interface AppState {
     role: string | null;
     discount: number;
     appliedPromoCode: string | null;
+    isLoading: boolean;
 }
 
 interface AppContextType {
@@ -20,6 +21,7 @@ const initialState: AppState = {
     role: null,
     discount: 0,
     appliedPromoCode: null,
+    isLoading: true,
 };
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -32,16 +34,17 @@ export const actionTypes = {
     UPDATE_QUANTITY: 'UPDATE_QUANTITY',
     REMOVE_FROM_CART: 'REMOVE_FROM_CART',
     CLEAR_CART: 'CLEAR_CART',
-    SET_DISCOUNT: 'SET_DISCOUNT', // Action mới để lưu discount
-    CLEAR_DISCOUNT: 'CLEAR_DISCOUNT', // Action mới để xóa discount
+    SET_DISCOUNT: 'SET_DISCOUNT',
+    CLEAR_DISCOUNT: 'CLEAR_DISCOUNT',
+    SET_LOADING: 'SET_LOADING',
 };
 
 const appReducer = (state: AppState, action: any): AppState => {
     switch (action.type) {
         case actionTypes.LOGIN:
-            return { ...state, token: action.payload.token, role: action.payload.role };
+            return { ...state, token: action.payload.token, role: action.payload.role, isLoading: false };
         case actionTypes.LOGOUT:
-            return { ...state, token: null, role: null, cart: [], discount: 0, appliedPromoCode: null };
+            return { ...state, token: null, role: null, cart: [], discount: 0, appliedPromoCode: null, isLoading: false };
         case actionTypes.ADD_TO_CART:
             const existingItem = state.cart.find((item) => item.id === action.payload.id);
             if (existingItem) {
@@ -71,7 +74,7 @@ const appReducer = (state: AppState, action: any): AppState => {
                 cart: state.cart.filter((item) => item.id !== action.payload.id),
             };
         case actionTypes.CLEAR_CART:
-            return { ...state, cart: [], discount: 0, appliedPromoCode: null }; // Xóa discount khi xóa giỏ hàng
+            return { ...state, cart: [], discount: 0, appliedPromoCode: null };
         case actionTypes.SET_DISCOUNT:
             return {
                 ...state,
@@ -80,6 +83,8 @@ const appReducer = (state: AppState, action: any): AppState => {
             };
         case actionTypes.CLEAR_DISCOUNT:
             return { ...state, discount: 0, appliedPromoCode: null };
+        case actionTypes.SET_LOADING:
+            return { ...state, isLoading: action.payload };
         default:
             return state;
     }
@@ -94,12 +99,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             role: null,
             discount: 0,
             appliedPromoCode: null,
+            isLoading: !!savedToken,
         };
     });
 
     useEffect(() => {
         const fetchRole = async () => {
-            if (state.token && !state.role) {
+            if (state.token) {
+                dispatch({ type: actionTypes.SET_LOADING, payload: true });
                 try {
                     const response = await fetch('http://localhost:4999/api/auth/me', {
                         headers: { Authorization: `Bearer ${state.token}` },
@@ -108,11 +115,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     if (response.ok) {
                         dispatch({ type: actionTypes.LOGIN, payload: { token: state.token, role: data.data.role } });
                     } else {
+                        console.error('Failed to fetch role:', data.message);
+                        localStorage.removeItem('token');
                         dispatch({ type: actionTypes.LOGOUT });
                     }
                 } catch (err) {
+                    console.error('Error fetching role:', err);
+                    localStorage.removeItem('token');
                     dispatch({ type: actionTypes.LOGOUT });
+                } finally {
+                    dispatch({ type: actionTypes.SET_LOADING, payload: false });
                 }
+            } else {
+                dispatch({ type: actionTypes.SET_LOADING, payload: false });
             }
         };
         fetchRole();
