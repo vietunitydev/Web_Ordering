@@ -123,18 +123,6 @@ const AdminOrdersPage: React.FC = () => {
                                 className="search-input"
                             />
                             <input
-                                type="date"
-                                value={searchTerms.createdAtFrom}
-                                onChange={(e) => handleSearchChange('createdAtFrom', e.target.value)}
-                                className="search-input"
-                            />
-                            <input
-                                type="date"
-                                value={searchTerms.createdAtTo}
-                                onChange={(e) => handleSearchChange('createdAtTo', e.target.value)}
-                                className="search-input"
-                            />
-                            <input
                                 type="text"
                                 placeholder="Tìm tên"
                                 value={searchTerms.name}
@@ -146,6 +134,18 @@ const AdminOrdersPage: React.FC = () => {
                                 placeholder="Tìm tổng"
                                 value={searchTerms.payment}
                                 onChange={(e) => handleSearchChange('payment', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="date"
+                                value={searchTerms.createdAtFrom}
+                                onChange={(e) => handleSearchChange('createdAtFrom', e.target.value)}
+                                className="search-input"
+                            />
+                            <input
+                                type="date"
+                                value={searchTerms.createdAtTo}
+                                onChange={(e) => handleSearchChange('createdAtTo', e.target.value)}
                                 className="search-input"
                             />
                             <select
@@ -166,9 +166,8 @@ const AdminOrdersPage: React.FC = () => {
                                 className="search-input"
                             >
                                 <option value="">Tất cả phương thức</option>
-                                <option value="Credit Card">Thẻ tín dụng</option>
                                 <option value="Cash">Tiền mặt</option>
-                                <option value="PayPal">PayPal</option>
+                                <option value="Stripe">Stripe</option>
                                 {/* Add more payment methods as needed */}
                             </select>
                         </div>
@@ -180,7 +179,7 @@ const AdminOrdersPage: React.FC = () => {
                                 <th>Date</th>
                                 <th>Customer</th>
                                 <th>Total</th>
-                                <th>Status</th>
+                                <th>Method</th>
                                 <th>Action</th>
                                 <th>Details</th>
                             </tr>
@@ -193,7 +192,7 @@ const AdminOrdersPage: React.FC = () => {
                                         <td className="fixed-width">{new Date(order.createdAt).toLocaleDateString()}</td>
                                         <td className="fixed-width customer">{order.name}</td>
                                         <td className="fixed-width total">${order.payment.toFixed(2)}</td>
-                                        <td className="fixed-width">{order.status}</td>
+                                        <td className="fixed-width">{order.paymentMethod}</td>
                                         <td>
                                             <select value={order.status} onChange={(e) => handleUpdateStatus(order._id, e.target.value)}>
                                                 <option value="pending">Đang chờ</option>

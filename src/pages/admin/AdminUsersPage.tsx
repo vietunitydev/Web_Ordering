@@ -153,7 +153,6 @@ const AdminUsersPage: React.FC = () => {
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Address</th>
-                                <th>Role</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -164,7 +163,6 @@ const AdminUsersPage: React.FC = () => {
                                     <td className="fixed-width">{user.email}</td>
                                     <td className="fixed-width">{user.phone || 'N/A'}</td>
                                     <td className="fixed-width address">{user.address || 'N/A'}</td>
-                                    <td className="fixed-width">{user.role}</td>
                                     <td>
                                         <button className="delete-btn" onClick={() => handleDelete(user._id)}>
                                             Delete

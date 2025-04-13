@@ -10,7 +10,7 @@ const AddItemPage: React.FC = () => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        type: '',
+        type: 'main',
         price: '',
         image: null as File | null,
     });
@@ -68,7 +68,7 @@ const AddItemPage: React.FC = () => {
             <div className="add-item-page">
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="image">Upload Image</label>
+                        <label htmlFor="image">Tải ảnh lên</label>
                         <div className="image-upload">
                             <input
                                 type="file"

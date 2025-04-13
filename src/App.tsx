@@ -10,7 +10,7 @@ import ProfilePage from './pages/profile/ProfilePage.tsx';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage.tsx';
 import OrderHistoryPage from './pages/OderHistoryPage/OrderHistoryPage.tsx';
 import AddItemPage from './pages/admin/AddItemPage.tsx';
-import ListItemsPage from './pages/admin/ListItemPage.tsx';
+import ListItemsPage from './pages/admin/AdminListFood.tsx';
 import AdminOrdersPage from './pages/admin/AdminOrderPage.tsx';
 import { AppProvider, useAppContext } from './components/AppContext/AppContext.tsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.tsx';

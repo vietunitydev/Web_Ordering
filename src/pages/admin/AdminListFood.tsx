@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import axios from 'axios';
-import './ListItemsPage.css';
+import './AdminListFood.css';
 import { useAppContext } from '../../components/AppContext/AppContext.tsx';
 
 interface Item {
@@ -117,13 +117,13 @@ const ListItemsPage: React.FC = () => {
 
                 {/* New Search Form */}
                 <div className="search-form">
-                    <input
-                        type="text"
-                        placeholder="Tìm ID"
-                        value={searchTerms.id}
-                        onChange={(e) => handleSearchChange('id', e.target.value)}
-                        className="search-input"
-                    />
+                    {/*<input*/}
+                    {/*    type="text"*/}
+                    {/*    placeholder="Tìm ID"*/}
+                    {/*    value={searchTerms.id}*/}
+                    {/*    onChange={(e) => handleSearchChange('id', e.target.value)}*/}
+                    {/*    className="search-input"*/}
+                    {/*/>*/}
                     <input
                         type="text"
                         placeholder="Tìm tên"
@@ -138,18 +138,6 @@ const ListItemsPage: React.FC = () => {
                         onChange={(e) => handleSearchChange('description', e.target.value)}
                         className="search-input"
                     />
-                    <select
-                        value={searchTerms.type}
-                        onChange={(e) => handleSearchChange('type', e.target.value)}
-                        className="search-input"
-                    >
-                        <option value="">Tất cả danh mục</option>
-                        <option value="main">Món chính</option>
-                        <option value="dessert">Tráng miệng</option>
-                        <option value="fast-food">Đồ ăn nhanh</option>
-                        <option value="drink">Đồ uống</option>
-                        <option value="other">Khác</option>
-                    </select>
                     <input
                         type="number"
                         placeholder="Giá từ"
@@ -166,6 +154,18 @@ const ListItemsPage: React.FC = () => {
                         className="search-input"
                         min="0" // Prevent negative numbers in HTML
                     />
+                    <select
+                        value={searchTerms.type}
+                        onChange={(e) => handleSearchChange('type', e.target.value)}
+                        className="search-input"
+                    >
+                        <option value="">Tất cả danh mục</option>
+                        <option value="main">Món chính</option>
+                        <option value="dessert">Tráng miệng</option>
+                        <option value="fast-food">Đồ ăn nhanh</option>
+                        <option value="drink">Đồ uống</option>
+                        <option value="other">Khác</option>
+                    </select>
                 </div>
 
                 {items.length === 0 ? (
