@@ -30,7 +30,7 @@ const FoodPage: React.FC = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await axios.get('http://localhost:4999/api/foodItems');
+                const response = await axios.get('http://localhost:4999/api/foodItems/all');
                 setItems(response.data);
             } catch (error) {
                 console.error('Lỗi khi lấy danh sách sản phẩm:', error);

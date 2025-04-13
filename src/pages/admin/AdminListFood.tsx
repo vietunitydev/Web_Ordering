@@ -31,7 +31,7 @@ const ListItemsPage: React.FC = () => {
         const fetchItems = async () => {
             if (state.role !== 'admin') return;
             try {
-                const response = await axios.get('http://localhost:4999/api/foodItems', {
+                const response = await axios.get('http://localhost:4999/api/foodItems/all', {
                     headers: { Authorization: `Bearer ${state.token}` }
                 });
                 setItems(response.data);
